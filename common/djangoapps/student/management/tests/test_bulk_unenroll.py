@@ -1,12 +1,17 @@
 from __future__ import absolute_import
 
+import tempfile
 from tempfile import NamedTemporaryFile
 
+from  django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
+from django.test import override_settings
+from mock import MagicMock, PropertyMock, patch
 from testfixtures import LogCapture
 
 from course_modes.tests.factories import CourseModeFactory
-from student.models import CourseEnrollment
+from student.models import CourseEnrollment, BulkUnenrollConfiguration
 from student.tests.factories import UserFactory
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
@@ -103,3 +108,19 @@ class BulkUnenrollTests(SharedModuleStoreTestCase):
             call_command("bulk_unenroll", "--csv_path={}".format(csv.name))
             for enrollment in CourseEnrollment.objects.all():
                 self.assertEqual(enrollment.is_active, False)
+
+    def test_bulk_un_enroll_from_config_model(self, config_mock):
+        """Verify users are unenrolled using the command."""
+        lines = "user_id,username,email,course_id\n"
+        for enrollment in self.enrollments:
+            lines += str(enrollment.user.id) + "," + enrollment.user.username + "," + \
+                      enrollment.user.email + "," + str(enrollment.course.id) + "\n"
+
+        csv_file = SimpleUploadedFile(name='test.csv', content=lines, content_type='text/csv')
+        BulkUnenrollConfiguration.objects.create(enabled=True, csv_file=csv_file)
+
+        call_command("bulk_unenroll")
+        for enrollment in CourseEnrollment.objects.all():
+            self.assertEqual(enrollment.is_active, False)
+
+
