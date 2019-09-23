@@ -1,13 +1,9 @@
 from __future__ import absolute_import
 
-import tempfile
 from tempfile import NamedTemporaryFile
 
-from  django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
-from django.test import override_settings
-from mock import MagicMock, PropertyMock, patch
 from testfixtures import LogCapture
 
 from course_modes.tests.factories import CourseModeFactory
