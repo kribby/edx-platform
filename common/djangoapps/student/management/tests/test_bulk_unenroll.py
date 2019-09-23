@@ -110,7 +110,7 @@ class BulkUnenrollTests(SharedModuleStoreTestCase):
         lines = "user_id,username,email,course_id\n"
         for enrollment in self.enrollments:
             lines += str(enrollment.user.id) + "," + enrollment.user.username + "," + \
-                      enrollment.user.email + "," + str(enrollment.course.id) + "\n"
+                     enrollment.user.email + "," + str(enrollment.course.id) + "\n"
 
         csv_file = SimpleUploadedFile(name='test.csv', content=lines, content_type='text/csv')
         BulkUnenrollConfiguration.objects.create(enabled=True, csv_file=csv_file)
@@ -118,5 +118,3 @@ class BulkUnenrollTests(SharedModuleStoreTestCase):
         call_command("bulk_unenroll")
         for enrollment in CourseEnrollment.objects.all():
             self.assertEqual(enrollment.is_active, False)
-
-

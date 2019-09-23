@@ -42,7 +42,6 @@ from student.models import (
 )
 from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore
-from student.forms import CsvImportForm
 
 User = get_user_model()  # pylint:disable=invalid-name
 
