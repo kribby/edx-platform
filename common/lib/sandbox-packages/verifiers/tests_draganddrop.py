@@ -787,7 +787,7 @@ class Test_DragAndDrop_Populate(unittest.TestCase):
         user_groups = [['1'], ['name_with_icon']]
         user_positions = [{'user': [[10, 10]]}, {'user': [[20, 20]]}]
 
-        self.assertEqual(correct_groups, dnd.correct_groups)
+        self.assertEqual(sorted(correct_groups), sorted(dnd.correct_groups))
         self.assertEqual(correct_positions, dnd.correct_positions)
         self.assertEqual(user_groups, dnd.user_groups)
         self.assertEqual(user_positions, dnd.user_positions)
