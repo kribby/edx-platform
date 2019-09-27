@@ -73,6 +73,11 @@ from student.models import CourseEnrollment
       });
     });
   </%static:webpack>
+  <%static:webpack entry="EnterpriseLearnerPortalBanner">
+      $(document).ready(function() {
+          EnterpriseLearnerPortalBanner();
+      });
+  </%static:webpack>
   % if settings.FEATURES.get('ENABLE_DASHBOARD_SEARCH'):
     <%static:require_module module_name="course_search/js/dashboard_search_factory" class_name="DashboardSearchFactory">
         DashboardSearchFactory();

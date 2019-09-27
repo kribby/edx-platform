@@ -2,7 +2,7 @@ import { getAuthenticatedAPIClient } from '@edx/frontend-auth';
 import { getLearnerPortalLinks } from '@edx/frontend-enterprise';
 import { NewRelicLoggingService } from '@edx/frontend-logging';
 
-function CustomUserMenuLinks() {
+function EnterpriseLearnerPortalBanner() {
   const apiClient = getAuthenticatedAPIClient({
     appBaseUrl: 'http://localhost:18000',
     authBaseUrl: 'http://localhost:18000',
@@ -15,16 +15,27 @@ function CustomUserMenuLinks() {
     loggingService: NewRelicLoggingService,
   });
   getLearnerPortalLinks(apiClient).then((learnerPortalLinks) => {
-    const $dashboardLink = $('#user-menu .dashboard');
-    const classNames = 'mobile-nav-item dropdown-item dropdown-nav-item';
+    const $dashboardContent = $('#content');
+    const classNames = 'wrapper-msg urgency-low warning recovery-email-alert';
     for (let i = 0; i < learnerPortalLinks.length; i += 1) {
       const link = learnerPortalLinks[i];
 
-      $dashboardLink.after(
-        `<div class="${classNames}"><a href="${link.url}" role="menuitem">${link.title}</a></div>`
+      $dashboardContent.prepend(
+        `<div>
+            <div class="${classNames}" id="banner-msg">
+                <i id="close" class="fa fa-close close-icon"></i>
+                <div class="msg">
+                    <div class="msg-content">
+                        <div class="copy"><p>Visit your awesome edX for Business homepage to see all the courses your enterprise has sponsored. Go to your 
+                            <a href="${link.url}" role="menuitem">${link.title}</a>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`
       );
     }
   });
 }
 
-export { CustomUserMenuLinks }; // eslint-disable-line import/prefer-default-export
+export { EnterpriseLearnerPortalBanner }; // eslint-disable-line import/prefer-default-export

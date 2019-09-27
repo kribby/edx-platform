@@ -92,6 +92,7 @@ module.exports = Merge.smart({
             StudentAccountDeletionInitializer: './lms/static/js/student_account/StudentAccountDeletionInitializer.js',
             ProblemBrowser: './lms/djangoapps/instructor/static/instructor/ProblemBrowser/index.jsx',
             CustomUserMenuLinks: './lms/static/js/header/CustomUserMenuLinks.js',
+            EnterpriseLearnerPortalBanner: './lms/static/js/learner_dashboard/EnterpriseLearnerPortalBanner.js',
 
             // Learner Dashboard
             EntitlementFactory: './lms/static/js/learner_dashboard/course_entitlement_factory.js',
