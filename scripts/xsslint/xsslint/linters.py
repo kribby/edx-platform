@@ -4,11 +4,11 @@ Linter classes containing logic for checking various filetypes.
 from __future__ import absolute_import
 
 import ast
+import io
 import os
 import re
 import six
 import textwrap
-import io
 
 from xsslint import visitors
 from xsslint.reporting import ExpressionRuleViolation, FileResults, RuleViolation
