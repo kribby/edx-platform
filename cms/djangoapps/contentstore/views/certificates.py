@@ -237,9 +237,10 @@ class CertificateManager(object):
         Deserialize from a JSON representation into a Certificate object.
         'value' should be either a Certificate instance, or a valid JSON string
         """
-
+        value = str(value)
         # Ensure the schema fieldset meets our expectations
         for key in ("name", "description", "version"):
+            print("key: {0}, value: {1}".format(str(type(key)),str(type(value))))
             if key not in value:
                 raise CertificateValidationError(_(u"Certificate dict {0} missing value key '{1}'").format(value, key))
 
