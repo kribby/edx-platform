@@ -6,6 +6,7 @@ from __future__ import absolute_import
 import ast
 import os
 import re
+import six
 import textwrap
 import io
 
@@ -55,7 +56,7 @@ class BaseLinter(object):
         """
         with io.open(file_full_path, 'r') as input_file:
             file_contents = input_file.read()
-            return file_contents
+            return file_contents.decode(encoding='utf-8') if six.PY2 else file_contents
 
     def _load_and_check_file_is_safe(self, file_full_path, lint_function, results):
         """

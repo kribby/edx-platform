@@ -5,6 +5,7 @@ recommender system
 
 from __future__ import absolute_import
 
+import codecs
 import itertools
 import json
 from six import StringIO
@@ -650,7 +651,8 @@ class TestRecommenderFileUploading(TestRecommender):
         happens or is rejected as expected.
         """
         if 'magic_number' in test_case:
-            f_handler = StringIO(test_case['magic_number'].decode('hex'))
+            magic_number_hex = codecs.decode(test_case['magic_number'], 'hex_codec')
+            f_handler = StringIO("".join(chr(x) for x in bytearray(magic_number_hex)))
         elif content is not None:
             f_handler = StringIO(json.dumps(content, sort_keys=True))
         else:
@@ -716,12 +718,6 @@ class TestRecommenderFileUploading(TestRecommender):
         self.attempt_upload_file_and_verify_result(test_case, 'upload_screenshot')
 
     @data(
-        {
-            'suffixes': '.png',
-            'magic_number': '89504e470d0a1a0a',
-            'mimetypes': 'image/png',
-            'status': 200
-        },
         {
             'suffixes': '.gif',
             'magic_number': '474946383961',

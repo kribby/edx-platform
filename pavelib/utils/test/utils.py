@@ -5,6 +5,7 @@ from __future__ import absolute_import, print_function
 
 import os
 import re
+import six
 import subprocess
 
 from paver.easy import cmdopts, sh, task
@@ -131,7 +132,10 @@ def check_firefox_version():
 
     # Firefox will be run as a local process
     expected_firefox_ver = "Mozilla Firefox " + str(MINIMUM_FIREFOX_VERSION)
-    firefox_ver_string = subprocess.check_output("firefox --version", shell=True).strip().decode('utf-8')
+    if six.PY2:
+        firefox_ver_string = subprocess.check_output("firefox --version", shell=True).strip().decode('utf-8')
+    else:
+        firefox_ver_string = subprocess.check_output("firefox --version", shell=True).strip()
     firefox_version_regex = re.compile(r"Mozilla Firefox (\d+.\d+)")
     try:
         firefox_ver = float(firefox_version_regex.search(firefox_ver_string).group(1))
