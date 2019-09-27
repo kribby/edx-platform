@@ -189,7 +189,7 @@ class AuthTestCase(ContentStoreTestCase):
             self.assertEqual(resp.status_code, 403)
         resp = self._login(self.email, 'wrong_password')
         self.assertEqual(resp.status_code, 403)
-        self.assertIn('Too many failed login attempts.', resp.content)
+        self.assertIn(b'Too many failed login attempts.', resp.content)
 
     @override_settings(MAX_FAILED_LOGIN_ATTEMPTS_ALLOWED=3)
     @override_settings(MAX_FAILED_LOGIN_ATTEMPTS_LOCKOUT_PERIOD_SECS=2)
