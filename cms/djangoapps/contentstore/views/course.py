@@ -648,6 +648,12 @@ def course_index(request, course_key):
         deprecated_block_names = [block.name for block in deprecated_xblocks()]
         deprecated_blocks_info = _deprecated_blocks_info(course_module, deprecated_block_names)
 
+        frontend_app_publisher_url = configuration_helpers.get_value_for_org(
+            course_module.location.org,
+            'FRONTEND_APP_PUBLISHER_URL',
+            settings.FEATURES.get('FRONTEND_APP_PUBLISHER_URL', False)
+        )
+
         return render_to_response('course_outline.html', {
             'language_code': request.LANGUAGE_CODE,
             'context_course': course_module,
@@ -667,6 +673,7 @@ def course_index(request, course_key):
                     'action_state_id': current_action.id,
                 },
             ) if current_action else None,
+            'frontend_app_publisher_url': frontend_app_publisher_url,
         })
 
 
@@ -1072,7 +1079,7 @@ def settings_handler(request, course_key_string):
             sidebar_html_enabled = course_experience_waffle().is_enabled(ENABLE_COURSE_ABOUT_SIDEBAR_HTML)
             # self_paced_enabled = SelfPacedConfiguration.current().enabled
 
-            verified_mode = CourseMode.verified_mode_for_course(course_key)
+            verified_mode = CourseMode.verified_mode_for_course(course_key, include_expired=True)
             upgrade_deadline = (verified_mode and verified_mode.expiration_datetime and
                                 verified_mode.expiration_datetime.isoformat())
 

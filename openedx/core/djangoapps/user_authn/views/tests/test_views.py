@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import
 
+import json
 import logging
 import re
 from http.cookies import SimpleCookie
@@ -37,13 +38,14 @@ from course_modes.models import CourseMode
 from openedx.core.djangoapps.oauth_dispatch.tests import factories as dot_factories
 from openedx.core.djangoapps.site_configuration.tests.mixins import SiteMixin
 from openedx.core.djangoapps.theming.tests.test_util import with_comprehensive_theme_context
-from openedx.core.djangoapps.user_api.accounts.api import activate_account, create_account
+from openedx.core.djangoapps.user_api.accounts.api import activate_account
 from openedx.core.djangoapps.user_api.accounts.utils import ENABLE_SECONDARY_EMAIL_FEATURE_SWITCH
 from openedx.core.djangoapps.user_api.errors import UserAPIInternalError
 from openedx.core.djangoapps.user_authn.views.login_form import login_and_registration_form
 from openedx.core.djangolib.js_utils import dump_js_escaped_json
 from openedx.core.djangolib.markup import HTML, Text
 from openedx.core.djangolib.testing.utils import CacheIsolationTestCase, skip_unless_lms
+from student.models import Registration
 from student.tests.factories import AccountRecoveryFactory
 from third_party_auth.tests.testutil import ThirdPartyAuthTestMixin, simulate_running_pipeline
 from util.testing import UrlResetMixin
@@ -74,12 +76,27 @@ class UserAccountUpdateTest(CacheIsolationTestCase, UrlResetMixin):
 
     ENABLED_CACHES = ['default']
 
+    def _create_account(self, username, password, email):
+        # pylint: disable=missing-docstring
+        registration_url = reverse('user_api_registration')
+        resp = self.client.post(registration_url, {
+            'username': username,
+            'email': email,
+            'password': password,
+            'name': username,
+            'honor_code': 'true',
+        })
+        self.assertEqual(resp.status_code, 200)
+
     def setUp(self):
         super(UserAccountUpdateTest, self).setUp()
 
         # Create/activate a new account
-        activation_key = create_account(self.USERNAME, self.OLD_PASSWORD, self.OLD_EMAIL)
-        activate_account(activation_key)
+        self._create_account(self.USERNAME, self.OLD_PASSWORD, self.OLD_EMAIL)
+        mail.outbox = []
+        user = User.objects.get(username=self.USERNAME)
+        registration = Registration.objects.get(user=user)
+        activate_account(registration.activation_key)
 
         self.account_recovery = AccountRecoveryFactory.create(user=User.objects.get(email=self.OLD_EMAIL))
         self.enable_account_recovery_switch = Switch.objects.create(
@@ -125,8 +142,11 @@ class UserAccountUpdateTest(CacheIsolationTestCase, UrlResetMixin):
         self.client.logout()
 
         # Verify that the new password can be used to log in
-        result = self.client.login(username=self.USERNAME, password=self.NEW_PASSWORD)
-        self.assertTrue(result)
+        login_url = reverse('login_post')
+        response = self.client.post(login_url, {'email': self.OLD_EMAIL, 'password': self.NEW_PASSWORD})
+        assert response.status_code == 200
+        response_dict = json.loads(response.content.decode('utf-8'))
+        assert response_dict['success']
 
         # Try reusing the activation link to change the password again
         # Visit the activation link again.
@@ -141,11 +161,13 @@ class UserAccountUpdateTest(CacheIsolationTestCase, UrlResetMixin):
         self.assertFalse(result)
 
         # Verify that the new password continues to be valid
-        result = self.client.login(username=self.USERNAME, password=self.NEW_PASSWORD)
-        self.assertTrue(result)
+        response = self.client.post(login_url, {'email': self.OLD_EMAIL, 'password': self.NEW_PASSWORD})
+        assert response.status_code == 200
+        response_dict = json.loads(response.content.decode('utf-8'))
+        assert response_dict['success']
 
     def test_password_change_failure(self):
-        with mock.patch('openedx.core.djangoapps.user_api.accounts.api.request_password_change',
+        with mock.patch('openedx.core.djangoapps.user_authn.views.password_reset.request_password_change',
                         side_effect=UserAPIInternalError):
             self._change_password()
             self.assertRaises(UserAPIInternalError)
@@ -216,7 +238,8 @@ class UserAccountUpdateTest(CacheIsolationTestCase, UrlResetMixin):
         self.client.logout()
 
         # Create a second user, but do not activate it
-        create_account(self.ALTERNATE_USERNAME, self.OLD_PASSWORD, self.NEW_EMAIL)
+        self._create_account(self.ALTERNATE_USERNAME, self.OLD_PASSWORD, self.NEW_EMAIL)
+        mail.outbox = []
 
         # Send the view the email address tied to the inactive user
         response = self._change_password(email=self.NEW_EMAIL)
@@ -407,7 +430,6 @@ class LoginAndRegistrationTest(ThirdPartyAuthTestMixin, UrlResetMixin, ModuleSto
         self._assert_third_party_auth_data(response, None, None, [], None)
 
     @mock.patch('openedx.core.djangoapps.user_authn.views.login_form.enterprise_customer_for_request')
-    @mock.patch('openedx.core.djangoapps.user_api.api.enterprise_customer_for_request')
     @ddt.data(
         ("signin_user", None, None, None, False),
         ("register_user", None, None, None, False),
@@ -437,8 +459,7 @@ class LoginAndRegistrationTest(ThirdPartyAuthTestMixin, UrlResetMixin, ModuleSto
             current_provider,
             expected_enterprise_customer_mock_attrs,
             add_user_details,
-            enterprise_customer_mock_1,
-            enterprise_customer_mock_2
+            enterprise_customer_mock,
     ):
         params = [
             ('course_id', 'course-v1:Org+Course+Run'),
@@ -462,8 +483,7 @@ class LoginAndRegistrationTest(ThirdPartyAuthTestMixin, UrlResetMixin, ModuleSto
         email = None
         if add_user_details:
             email = 'test@test.com'
-        enterprise_customer_mock_1.return_value = expected_ec
-        enterprise_customer_mock_2.return_value = expected_ec
+        enterprise_customer_mock.return_value = expected_ec
 
         # Simulate a running pipeline
         if current_backend is not None:
@@ -872,5 +892,4 @@ class AccountCreationTestCaseWithSiteOverrides(SiteMixin, TestCase):
         ALLOW_PUBLIC_ACCOUNT_CREATION flag is turned off
         """
         response = self.client.get(reverse('signin_user'))
-        self.assertNotIn(u'<a class="btn-neutral" href="/register?next=%2Fdashboard">Register</a>',
-                         response.content.decode(response.charset))
+        self.assertNotContains(response, u'<a class="btn-neutral" href="/register?next=%2Fdashboard">Register</a>')

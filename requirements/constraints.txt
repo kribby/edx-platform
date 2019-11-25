@@ -76,3 +76,9 @@ numpy<1.17.0
 #  jsondiff==1.1.1 (from moto==1.2.0->-r requirements/edx/testing.in (line 33))
 #  jsondiff==1.2.0 (from -r requirements/edx/base.txt (line 146))
 jsondiff==1.1.1
+
+# Constraining this since the newer versions require Python 3
+more-itertools==5.0.0
+
+# Constraining this Gunicorn requires Python 3.x >= 3.4.
+gunicorn<20.0.0

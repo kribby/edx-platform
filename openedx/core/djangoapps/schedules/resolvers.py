@@ -121,6 +121,7 @@ class BinnedSchedulesBaseResolver(PrefixedDebugLoggerMixin, RecipientResolver):
         schedules = Schedule.objects.select_related(
             'enrollment__user__profile',
             'enrollment__course',
+            'enrollment__fbeenrollmentexclusion',
         ).filter(
             Q(enrollment__course__end__isnull=True) | Q(
                 enrollment__course__end__gte=self.current_datetime
@@ -340,7 +341,7 @@ class CourseUpdateResolver(BinnedSchedulesBaseResolver):
     experience_filter = Q(experience__experience_type=ScheduleExperience.EXPERIENCES.course_updates)
 
     def schedules_for_bin(self):
-        week_num = abs(self.day_offset) / 7
+        week_num = abs(self.day_offset) // 7
         schedules = self.get_schedules_with_target_date_by_bin_and_orgs(
             order_by='enrollment__course',
         )

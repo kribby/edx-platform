@@ -220,7 +220,10 @@ class VideoBlockTestBase(unittest.TestCase):
             return [child.tag for child in elem]
 
         for attr in ['tag', 'attrib', 'text', 'tail']:
-            self.assertEqual(getattr(expected, attr), getattr(xml, attr))
+            expected_attr = getattr(expected, attr)
+            actual_attr = getattr(xml, attr)
+            self.assertEqual(expected_attr, actual_attr)
+
         self.assertEqual(get_child_tags(expected), get_child_tags(xml))
         for left, right in zip(expected, xml):
             self.assertXmlEqual(left, right)
@@ -817,7 +820,7 @@ class VideoExportTestCase(VideoBlockTestBase):
         xml = self.descriptor.definition_to_xml(self.file_system)
         # Check that download_video field is also set to default (False) in xml for backward compatibility
         expected = '<video url_name="SampleProblem"/>\n'
-        self.assertEquals(expected, etree.tostring(xml, pretty_print=True))
+        self.assertEquals(expected, etree.tostring(xml, pretty_print=True).decode('utf-8'))
 
     @patch('xmodule.video_module.video_module.edxval_api', None)
     def test_export_to_xml_with_transcripts_as_none(self):
@@ -826,7 +829,7 @@ class VideoExportTestCase(VideoBlockTestBase):
         """
         self.descriptor.transcripts = None
         xml = self.descriptor.definition_to_xml(self.file_system)
-        expected = '<video url_name="SampleProblem"/>\n'
+        expected = b'<video url_name="SampleProblem"/>\n'
         self.assertEquals(expected, etree.tostring(xml, pretty_print=True))
 
     @patch('xmodule.video_module.video_module.edxval_api', None)
@@ -1118,7 +1121,7 @@ class VideoBlockIndexingTestCase(unittest.TestCase):
 
         descriptor = instantiate_descriptor(data=xml_data_transcripts)
         translations = descriptor.available_translations(descriptor.get_transcripts_info())
-        self.assertEqual(translations, ['hr', 'ge'])
+        self.assertEqual(sorted(translations), sorted(['hr', 'ge']))
 
     def test_video_with_no_transcripts_translation_retrieval(self):
         """
@@ -1171,7 +1174,9 @@ class VideoBlockIndexingTestCase(unittest.TestCase):
         self.assertFalse(validation.empty)  # Validation contains some warning/message
         self.assertTrue(validation.summary)
         self.assertEqual(StudioValidationMessage.WARNING, validation.summary.type)
-        self.assertIn(expected_msg, validation.summary.text)
+        self.assertIn(
+            expected_msg, validation.summary.text.replace('Urdu, Esperanto', 'Esperanto, Urdu')
+        )
 
     @ddt.data(
         (

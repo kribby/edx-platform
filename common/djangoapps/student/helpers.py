@@ -11,7 +11,7 @@ from datetime import datetime
 
 import six.moves.urllib.parse
 from completion.exceptions import UnavailableCompletionData
-from completion.utilities import get_key_to_last_completed_course_block
+from completion.utilities import get_key_to_last_completed_block
 from django.conf import settings
 from django.contrib.auth import load_backend
 from django.contrib.auth.models import User
@@ -218,40 +218,6 @@ def check_verify_status_by_course(user, course_enrollments):
             status_by_course[key]['verification_good_until'] = recent_verification_datetime.strftime("%m/%d/%Y")
 
     return status_by_course
-
-
-def auth_pipeline_urls(auth_entry, redirect_url=None):
-    """Retrieve URLs for each enabled third-party auth provider.
-
-    These URLs are used on the "sign up" and "sign in" buttons
-    on the login/registration forms to allow users to begin
-    authentication with a third-party provider.
-
-    Optionally, we can redirect the user to an arbitrary
-    url after auth completes successfully.  We use this
-    to redirect the user to a page that required login,
-    or to send users to the payment flow when enrolling
-    in a course.
-
-    Args:
-        auth_entry (string): Either `pipeline.AUTH_ENTRY_LOGIN` or `pipeline.AUTH_ENTRY_REGISTER`
-
-    Keyword Args:
-        redirect_url (unicode): If provided, send users to this URL
-            after they successfully authenticate.
-
-    Returns:
-        dict mapping provider IDs to URLs
-
-    """
-    if not third_party_auth.is_enabled():
-        return {}
-
-    return {
-        provider.provider_id: third_party_auth.pipeline.get_login_url(
-            provider.provider_id, auth_entry, redirect_url=redirect_url
-        ) for provider in third_party_auth.provider.Registry.displayed_for_login()
-    }
 
 
 # Query string parameters that can be passed to the "finish_auth" view to manage
@@ -686,7 +652,7 @@ def get_resume_urls_for_enrollments(user, enrollments):
     resume_course_urls = OrderedDict()
     for enrollment in enrollments:
         try:
-            block_key = get_key_to_last_completed_course_block(user, enrollment.course_id)
+            block_key = get_key_to_last_completed_block(user, enrollment.course_id)
             url_to_block = reverse(
                 'jump_to',
                 kwargs={'course_id': enrollment.course_id, 'location': block_key}

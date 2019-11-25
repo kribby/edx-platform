@@ -76,6 +76,7 @@ from openedx.core.lib.url_utils import quote_slashes, unquote_slashes
 from openedx.core.lib.xblock_utils import (
     add_staff_markup,
     get_aside_from_xblock,
+    hash_resource,
     is_xblock_aside,
     replace_course_urls,
     replace_jump_to_id_urls,
@@ -84,6 +85,7 @@ from openedx.core.lib.xblock_utils import (
 from openedx.core.lib.xblock_utils import request_token as xblock_request_token
 from openedx.core.lib.xblock_utils import wrap_xblock
 from openedx.features.course_duration_limits.access import course_expiration_wrapper
+from openedx.features.discounts.utils import offer_banner_wrapper
 from student.models import anonymous_id_for_user, user_by_anonymous_id
 from student.roles import CourseBetaTesterRole
 from track import contexts
@@ -568,7 +570,6 @@ def get_module_system_for_user(
         else:
             BlockCompletion.objects.submit_completion(
                 user=user,
-                course_key=course_id,
                 block_key=block.scope_ids.usage_id,
                 completion=event['completion'],
             )
@@ -613,7 +614,6 @@ def get_module_system_for_user(
             if not getattr(block, 'has_custom_completion', False):
                 BlockCompletion.objects.submit_completion(
                     user=user,
-                    course_key=course_id,
                     block_key=block.scope_ids.usage_id,
                     completion=1.0,
                 )
@@ -730,6 +730,7 @@ def get_module_system_for_user(
 
     block_wrappers.append(partial(display_access_messages, user))
     block_wrappers.append(partial(course_expiration_wrapper, user))
+    block_wrappers.append(partial(offer_banner_wrapper, user))
 
     if settings.FEATURES.get('DISPLAY_DEBUG_INFO_TO_STAFF'):
         if is_masquerading_as_specific_student(user, course_id):
@@ -1217,16 +1218,6 @@ def _invoke_xblock_handler(request, course_id, usage_id, handler, suffix, course
             raise
 
     return webob_to_django_response(resp)
-
-
-def hash_resource(resource):
-    """
-    Hash a :class:`web_fragments.fragment.FragmentResource
-    """
-    md5 = hashlib.md5()
-    for data in resource:
-        md5.update(repr(data).encode('utf-8'))
-    return md5.hexdigest()
 
 
 @api_view(['GET'])

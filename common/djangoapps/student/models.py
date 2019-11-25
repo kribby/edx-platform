@@ -18,6 +18,7 @@ import logging
 import uuid
 from collections import OrderedDict, defaultdict, namedtuple
 from datetime import datetime, timedelta
+from django.core.validators import FileExtensionValidator
 from functools import total_ordering
 from importlib import import_module
 
@@ -28,6 +29,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import IntegrityError, models
@@ -104,14 +106,14 @@ class EnrollStatusChange(object):
     # complete a paid course purchase
     paid_complete = 'paid_complete'
 
-UNENROLLED_TO_ALLOWEDTOENROLL = 'from unenrolled to allowed to enroll'
-ALLOWEDTOENROLL_TO_ENROLLED = 'from allowed to enroll to enrolled'
-ENROLLED_TO_ENROLLED = 'from enrolled to enrolled'
-ENROLLED_TO_UNENROLLED = 'from enrolled to unenrolled'
-UNENROLLED_TO_ENROLLED = 'from unenrolled to enrolled'
-ALLOWEDTOENROLL_TO_UNENROLLED = 'from allowed to enroll to enrolled'
-UNENROLLED_TO_UNENROLLED = 'from unenrolled to unenrolled'
-DEFAULT_TRANSITION_STATE = 'N/A'
+UNENROLLED_TO_ALLOWEDTOENROLL = u'from unenrolled to allowed to enroll'
+ALLOWEDTOENROLL_TO_ENROLLED = u'from allowed to enroll to enrolled'
+ENROLLED_TO_ENROLLED = u'from enrolled to enrolled'
+ENROLLED_TO_UNENROLLED = u'from enrolled to unenrolled'
+UNENROLLED_TO_ENROLLED = u'from unenrolled to enrolled'
+ALLOWEDTOENROLL_TO_UNENROLLED = u'from allowed to enroll to enrolled'
+UNENROLLED_TO_UNENROLLED = u'from unenrolled to unenrolled'
+DEFAULT_TRANSITION_STATE = u'N/A'
 SCORE_RECALCULATION_DELAY_ON_ENROLLMENT_UPDATE = 30
 
 TRANSITION_STATES = (
@@ -389,8 +391,8 @@ class UserStanding(models.Model):
 
     .. no_pii:
     """
-    ACCOUNT_DISABLED = "disabled"
-    ACCOUNT_ENABLED = "enabled"
+    ACCOUNT_DISABLED = u"disabled"
+    ACCOUNT_ENABLED = u"enabled"
     USER_STANDING_CHOICES = (
         (ACCOUNT_DISABLED, u"Account Disabled"),
         (ACCOUNT_ENABLED, u"Account Enabled"),
@@ -440,7 +442,7 @@ class UserProfile(models.Model):
     name = models.CharField(blank=True, max_length=255, db_index=True)
 
     meta = models.TextField(blank=True)  # JSON dictionary for future expansion
-    courseware = models.CharField(blank=True, max_length=255, default='course.xml')
+    courseware = models.CharField(blank=True, max_length=255, default=u'course.xml')
 
     # Language is deprecated and no longer used. Old rows exist that have
     # user-entered free form text values (ex. "English"), some of which have
@@ -458,10 +460,10 @@ class UserProfile(models.Model):
     VALID_YEARS = list(range(this_year, this_year - 120, -1))
     year_of_birth = models.IntegerField(blank=True, null=True, db_index=True)
     GENDER_CHOICES = (
-        ('m', ugettext_noop('Male')),
-        ('f', ugettext_noop('Female')),
+        (u'm', ugettext_noop(u'Male')),
+        (u'f', ugettext_noop(u'Female')),
         # Translators: 'Other' refers to the student's gender
-        ('o', ugettext_noop('Other/Prefer Not to Say'))
+        (u'o', ugettext_noop(u'Other/Prefer Not to Say'))
     )
     gender = models.CharField(
         blank=True, null=True, max_length=6, db_index=True, choices=GENDER_CHOICES
@@ -472,17 +474,17 @@ class UserProfile(models.Model):
     # ('p_se', 'Doctorate in science or engineering'),
     # ('p_oth', 'Doctorate in another field'),
     LEVEL_OF_EDUCATION_CHOICES = (
-        ('p', ugettext_noop('Doctorate')),
-        ('m', ugettext_noop("Master's or professional degree")),
-        ('b', ugettext_noop("Bachelor's degree")),
-        ('a', ugettext_noop("Associate degree")),
-        ('hs', ugettext_noop("Secondary/high school")),
-        ('jhs', ugettext_noop("Junior secondary/junior high/middle school")),
-        ('el', ugettext_noop("Elementary/primary school")),
+        (u'p', ugettext_noop(u'Doctorate')),
+        (u'm', ugettext_noop(u"Master's or professional degree")),
+        (u'b', ugettext_noop(u"Bachelor's degree")),
+        (u'a', ugettext_noop(u"Associate degree")),
+        (u'hs', ugettext_noop(u"Secondary/high school")),
+        (u'jhs', ugettext_noop(u"Junior secondary/junior high/middle school")),
+        (u'el', ugettext_noop(u"Elementary/primary school")),
         # Translators: 'None' refers to the student's level of education
-        ('none', ugettext_noop("No formal education")),
+        (u'none', ugettext_noop(u"No formal education")),
         # Translators: 'Other' refers to the student's level of education
-        ('other', ugettext_noop("Other education"))
+        (u'other', ugettext_noop(u"Other education"))
     )
     level_of_education = models.CharField(
         blank=True, null=True, max_length=6, db_index=True,
@@ -762,7 +764,7 @@ class Registration(models.Model):
         db_table = "auth_registration"
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    activation_key = models.CharField(('activation key'), max_length=32, unique=True, db_index=True)
+    activation_key = models.CharField((u'activation key'), max_length=32, unique=True, db_index=True)
 
     def register(self, user):
         # MINOR TODO: Switch to crypto-secure key
@@ -772,33 +774,8 @@ class Registration(models.Model):
 
     def activate(self):
         self.user.is_active = True
-        self._track_activation()
         self.user.save(update_fields=['is_active'])
         log.info(u'User %s (%s) account is successfully activated.', self.user.username, self.user.email)
-
-    def _track_activation(self):
-        """
-        Update the isActive flag in mailchimp for activated users.
-        """
-        has_segment_key = getattr(settings, 'LMS_SEGMENT_KEY', None)
-        has_mailchimp_id = hasattr(settings, 'MAILCHIMP_NEW_USER_LIST_ID')
-        if has_segment_key and has_mailchimp_id:
-            # .. pii: Username and email are sent to Segment here. Retired directly through Segment API call in Tubular.
-            # .. pii_types: email_address, username
-            # .. pii_retirement: third_party
-            segment.identify(
-                self.user.id,  # pylint: disable=no-member
-                {
-                    'email': self.user.email,
-                    'username': self.user.username,
-                    'activated': 1,
-                },
-                {
-                    "MailChimp": {
-                        "listId": settings.MAILCHIMP_NEW_USER_LIST_ID
-                    }
-                }
-            )
 
 
 class PendingNameChange(DeletableByUserValue, models.Model):
@@ -824,7 +801,7 @@ class PendingEmailChange(DeletableByUserValue, models.Model):
     """
     user = models.OneToOneField(User, unique=True, db_index=True, on_delete=models.CASCADE)
     new_email = models.CharField(blank=True, max_length=255, db_index=True)
-    activation_key = models.CharField(('activation key'), max_length=32, unique=True, db_index=True)
+    activation_key = models.CharField((u'activation key'), max_length=32, unique=True, db_index=True)
 
     def request_change(self, email):
         """Request a change to a user's email.
@@ -854,7 +831,7 @@ class PendingSecondaryEmailChange(DeletableByUserValue, models.Model):
     """
     user = models.OneToOneField(User, unique=True, db_index=True, on_delete=models.CASCADE)
     new_secondary_email = models.CharField(blank=True, max_length=255, db_index=True)
-    activation_key = models.CharField(('activation key'), max_length=32, unique=True, db_index=True)
+    activation_key = models.CharField((u'activation key'), max_length=32, unique=True, db_index=True)
 
 
 EVENT_NAME_ENROLLMENT_ACTIVATED = 'edx.course.enrollment.activated'
@@ -939,28 +916,12 @@ class LoginFailures(models.Model):
         except ObjectDoesNotExist:
             return
 
-    def __repr__(self):
-        """Repr -> LoginFailures(username, count, date)"""
-        date_str = '-'
-        if self.lockout_until is not None:
-            date_str = self.lockout_until.isoformat()
-
-        return u'LoginFailures({username}, {count}, {date})'.format(
-            username=six.text_type(self.user.username, 'utf-8'),
-            count=self.failure_count,
-            date=date_str
-        )
-
     def __str__(self):
         """Str -> Username: count - date."""
-        date_str = '-'
-        if self.lockout_until is not None:
-            date_str = self.lockout_until.isoformat()
-
         return u'{username}: {count} - {date}'.format(
-            username=six.text_type(self.user.username, 'utf-8'),
+            username=self.user.username,
             count=self.failure_count,
-            date=date_str
+            date=self.lockout_until.isoformat() if self.lockout_until else '-'
         )
 
     class Meta:
@@ -1045,17 +1006,21 @@ class CourseEnrollmentManager(models.Manager):
 
         return is_course_full
 
-    def users_enrolled_in(self, course_id, include_inactive=False):
+    def users_enrolled_in(self, course_id, include_inactive=False, verified_only=False):
         """
         Return a queryset of User for every user enrolled in the course.  If
         `include_inactive` is True, returns both active and inactive enrollees
         for the course. Otherwise returns actively enrolled users only.
+        If 'verified_only' is True, returns report only for verified enrollees.
         """
+        # enrolled
         filter_kwargs = {
             'courseenrollment__course_id': course_id,
         }
         if not include_inactive:
             filter_kwargs['courseenrollment__is_active'] = True
+        if verified_only:
+            filter_kwargs['courseenrollment__mode'] = CourseMode.VERIFIED
         return User.objects.filter(**filter_kwargs)
 
     def enrollment_counts(self, course_id):
@@ -1632,19 +1597,12 @@ class CourseEnrollment(models.Model):
         The name of this method is long, but was the end result of hashing out a
         number of alternatives, so pylint can stuff it (disable=invalid-name)
         """
+        enrollments = cls.enrollments_for_user(user).select_related('schedule', 'course', 'course__image_set')
 
         if courses_limit:
-            enrollments = cls.enrollments_for_user(user).order_by('-created')[:courses_limit]
+            return enrollments.order_by('-created')[:courses_limit]
         else:
-            enrollments = cls.enrollments_for_user(user)
-
-        overviews = CourseOverview.get_from_ids_if_exists(
-            enrollment.course_id for enrollment in enrollments
-        )
-        for enrollment in enrollments:
-            enrollment._course_overview = overviews.get(enrollment.course_id)  # pylint: disable=protected-access
-
-        return enrollments
+            return enrollments
 
     @classmethod
     def enrollment_status_hash_cache_key(cls, user):
@@ -2072,6 +2030,22 @@ class CourseEnrollment(models.Model):
         cache[(user_id, course_key)] = enrollment_state
 
 
+@python_2_unicode_compatible
+class FBEEnrollmentExclusion(models.Model):
+    """
+    Disable FBE for enrollments in this table.
+
+    .. no_pii:
+    """
+    enrollment = models.OneToOneField(
+        CourseEnrollment,
+        on_delete=models.DO_NOTHING,
+    )
+
+    def __str__(self):
+        return "[FBEEnrollmentExclusion] %s" % (self.enrollment,)
+
+
 @receiver(models.signals.post_save, sender=CourseEnrollment)
 @receiver(models.signals.post_delete, sender=CourseEnrollment)
 def invalidate_enrollment_mode_cache(sender, instance, **kwargs):  # pylint: disable=unused-argument, invalid-name
@@ -2460,7 +2434,7 @@ class DashboardConfiguration(ConfigurationModel):
     """
     recent_enrollment_time_delta = models.PositiveIntegerField(
         default=0,
-        help_text="The number of seconds in which a new enrollment is considered 'recent'. "
+        help_text=u"The number of seconds in which a new enrollment is considered 'recent'. "
                   "Used to display notifications."
     )
 
@@ -2500,7 +2474,7 @@ class LinkedInAddToProfileConfiguration(ConfigurationModel):
     )
 
     # Deprecated
-    dashboard_tracking_code = models.TextField(default="", blank=True)
+    dashboard_tracking_code = models.TextField(default=u"", blank=True)
 
     trk_partner_name = models.CharField(
         max_length=10,
@@ -2845,6 +2819,18 @@ class RegistrationCookieConfiguration(ConfigurationModel):
         )
 
 
+class BulkUnenrollConfiguration(ConfigurationModel):
+    """
+
+    """
+    csv_file = models.FileField(
+        validators=[FileExtensionValidator(allowed_extensions=[u'csv'])],
+        help_text=_(u"It expect that the data will be provided in a csv file format with \
+                    first row being the header and columns will be as follows: \
+                    user_id, username, email, course_id, is_verified, verification_date")
+    )
+
+
 @python_2_unicode_compatible
 class UserAttribute(TimeStampedModel):
     """
@@ -2981,3 +2967,14 @@ class AccountRecovery(models.Model):
             pass
 
         return True
+
+
+class AllowedAuthUser(TimeStampedModel):
+    site = models.ForeignKey(Site, related_name='allowed_auth_users', on_delete=models.CASCADE)
+    email = models.EmailField(
+        help_text=_(
+            "An employee (a user whose email has current site's domain name) whose email exists in this model, can be "
+            "able to login from login screen through email and password. And if any employee's email doesn't exist in "
+            "this model then that employee can login via third party authentication backend only."),
+        unique=True,
+    )

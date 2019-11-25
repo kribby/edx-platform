@@ -38,8 +38,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2019-09-22 20:51+0000\n"
-"PO-Revision-Date: 2019-09-22 20:51:02.550394\n"
+"POT-Creation-Date: 2019-11-17 20:52+0000\n"
+"PO-Revision-Date: 2019-11-17 20:52:30.099431\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "Language: rtl\n"
@@ -91,7 +91,8 @@ msgstr "سعزسثذفهخر"
 
 #: cms/djangoapps/contentstore/views/helpers.py
 #: common/lib/xmodule/xmodule/unit_block.py
-#: lms/djangoapps/instructor/views/tools.py lms/templates/ccx/schedule.html
+#: lms/djangoapps/instructor/views/tools.py lms/templates/seq_module.html
+#: lms/templates/ccx/schedule.html
 msgid "Unit"
 msgstr "عرهف"
 
@@ -230,7 +231,7 @@ msgid "You're enrolled as an honor code student"
 msgstr "غخع'قث ثرقخممثي شس شر اخرخق ذخيث سفعيثرف"
 
 #: common/djangoapps/course_modes/helpers.py lms/djangoapps/branding/api.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 #: lms/templates/static_templates/honor.html
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/tos.html
@@ -383,6 +384,7 @@ msgstr "شذذخعرف قثذخدثقغ"
 #. Translators: This label appears above a field on the registration form
 #. meant to hold the user's password.
 #: common/djangoapps/student/admin.py openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 #: cms/templates/login.html cms/templates/register.html
 #: lms/templates/login.html lms/templates/provider_login.html
 #: lms/templates/register-form.html lms/templates/signup_modal.html
@@ -406,6 +408,24 @@ msgid "%(count)d student account was unlocked."
 msgid_plural "%(count)d student accounts were unlocked."
 msgstr[0] "%(count)d سفعيثرف شذذخعرف صشس عرمخذنثي."
 msgstr[1] "%(count)d سفعيثرف شذذخعرفس صثقث عرمخذنثي."
+
+#: common/djangoapps/student/admin.py
+#, python-brace-format
+msgid ""
+"Please add a key/value 'THIRD_PARTY_AUTH_ONLY_DOMAIN/{site_email_domain}' in"
+" SiteConfiguration model's values field."
+msgstr ""
+"حمثشسث شيي ش نثغ/دشمعث 'فاهقي_حشقفغ_شعفا_خرمغ_يخوشهر/{site_email_domain}' هر"
+" سهفثذخربهلعقشفهخر وخيثم'س دشمعثس بهثمي."
+
+#: common/djangoapps/student/admin.py
+#, python-brace-format
+msgid "Email doesn't have {domain_name} domain name."
+msgstr "ثوشهم يخثسر'ف اشدث {domain_name} يخوشهر رشوث."
+
+#: common/djangoapps/student/admin.py
+msgid "User with this email doesn't exist in system."
+msgstr "عسثق صهفا فاهس ثوشهم يخثسر'ف ثطهسف هر سغسفثو."
 
 #: common/djangoapps/student/forms.py
 msgid ""
@@ -738,6 +758,18 @@ msgid "Name of the affiliate cookie"
 msgstr "رشوث خب فاث شببهمهشفث ذخخنهث"
 
 #: common/djangoapps/student/models.py
+msgid ""
+"It expect that the data will be provided in a csv file format with"
+"                     first row being the header and columns will be as "
+"follows:                     user_id, username, email, course_id, "
+"is_verified, verification_date"
+msgstr ""
+"هف ثطحثذف فاشف فاث يشفش صهمم زث حقخدهيثي هر ش ذسد بهمث بخقوشف صهفا"
+"                     بهقسف قخص زثهرل فاث اثشيثق شري ذخمعورس صهمم زث شس "
+"بخممخصس:                     عسثق_هي, عسثقرشوث, ثوشهم, ذخعقسث_هي, "
+"هس_دثقهبهثي, دثقهبهذشفهخر_يشفث"
+
+#: common/djangoapps/student/models.py
 msgid "Name of this user attribute."
 msgstr "رشوث خب فاهس عسثق شففقهزعفث."
 
@@ -752,6 +784,18 @@ msgstr "سثذخريشقغ ثوشهم شييقثسس"
 #: common/djangoapps/student/models.py
 msgid "Secondary email address to recover linked account."
 msgstr "سثذخريشقغ ثوشهم شييقثسس فخ قثذخدثق مهرنثي شذذخعرف."
+
+#: common/djangoapps/student/models.py
+msgid ""
+"An employee (a user whose email has current site's domain name) whose email "
+"exists in this model, can be able to login from login screen through email "
+"and password. And if any employee's email doesn't exist in this model then "
+"that employee can login via third party authentication backend only."
+msgstr ""
+"شر ثوحمخغثث (ش عسثق صاخسث ثوشهم اشس ذعققثرف سهفث'س يخوشهر رشوث) صاخسث ثوشهم "
+"ثطهسفس هر فاهس وخيثم, ذشر زث شزمث فخ مخلهر بقخو مخلهر سذقثثر فاقخعلا ثوشهم "
+"شري حشسسصخقي. شري هب شرغ ثوحمخغثث'س ثوشهم يخثسر'ف ثطهسف هر فاهس وخيثم فاثر "
+"فاشف ثوحمخغثث ذشر مخلهر دهش فاهقي حشقفغ شعفاثرفهذشفهخر زشذنثري خرمغ."
 
 #: common/djangoapps/student/views/dashboard.py
 msgid " and "
@@ -5081,8 +5125,8 @@ msgstr ""
 
 #: common/templates/student/edx_ace/accountrecovery/email/body.html
 #: common/templates/student/edx_ace/accountrecovery/email/body.txt
-#: common/templates/student/edx_ace/passwordreset/email/body.html
-#: common/templates/student/edx_ace/passwordreset/email/body.txt
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.html
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.txt
 msgid ""
 "If you didn't request this change, you can disregard this email - we have "
 "not yet reset your password."
@@ -5091,12 +5135,12 @@ msgstr ""
 "رخف غثف قثسثف غخعق حشسسصخقي."
 
 #: common/templates/student/edx_ace/accountrecovery/email/body.txt
-#: common/templates/student/edx_ace/passwordreset/email/body.txt
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.txt
 msgid "Thanks for using our site!"
 msgstr "فاشرنس بخق عسهرل خعق سهفث!"
 
 #: common/templates/student/edx_ace/accountrecovery/email/body.txt
-#: common/templates/student/edx_ace/passwordreset/email/body.txt
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.txt
 #, python-format
 msgid "The %(platform_name)s Team"
 msgstr "فاث %(platform_name)s فثشو"
@@ -5173,49 +5217,6 @@ msgstr ""
 "صث نثثح ش مخل خب خمي ث-وشهمس, سخ هب فاهس قثضعثسف صشس عرهرفثرفهخرشم, صث ذشر "
 "هردثسفهلشفث."
 
-#: common/templates/student/edx_ace/passwordreset/email/body.html
-#: lms/templates/forgot_password_modal.html
-msgid "Password Reset"
-msgstr "حشسسصخقي قثسثف"
-
-#: common/templates/student/edx_ace/passwordreset/email/body.html
-#: common/templates/student/edx_ace/passwordreset/email/body.txt
-#, python-format
-msgid ""
-"You're receiving this e-mail because you requested a password reset for your"
-" user account at %(platform_name)s."
-msgstr ""
-"غخع'قث قثذثهدهرل فاهس ث-وشهم زثذشعسث غخع قثضعثسفثي ش حشسسصخقي قثسثف بخق غخعق"
-" عسثق شذذخعرف شف %(platform_name)s."
-
-#: common/templates/student/edx_ace/passwordreset/email/body.html
-#: common/templates/student/edx_ace/passwordreset/email/body.txt
-#, python-format
-msgid ""
-"However, there is currently no user account associated with your email "
-"address: %(email_address)s."
-msgstr ""
-"اخصثدثق, فاثقث هس ذعققثرفمغ رخ عسثق شذذخعرف شسسخذهشفثي صهفا غخعق ثوشهم "
-"شييقثسس: %(email_address)s."
-
-#: common/templates/student/edx_ace/passwordreset/email/body.html
-#: common/templates/student/edx_ace/passwordreset/email/body.txt
-msgid "If you did not request this change, you can ignore this email."
-msgstr "هب غخع يهي رخف قثضعثسف فاهس ذاشرلث, غخع ذشر هلرخقث فاهس ثوشهم."
-
-#: common/templates/student/edx_ace/passwordreset/email/body.html
-msgid "Change my Password"
-msgstr "ذاشرلث وغ حشسسصخقي"
-
-#: common/templates/student/edx_ace/passwordreset/email/body.txt
-msgid "Please go to the following page and choose a new password:"
-msgstr "حمثشسث لخ فخ فاث بخممخصهرل حشلث شري ذاخخسث ش رثص حشسسصخقي:"
-
-#: common/templates/student/edx_ace/passwordreset/email/subject.txt
-#, python-format
-msgid "Password reset on %(platform_name)s"
-msgstr "حشسسصخقي قثسثف خر %(platform_name)s"
-
 #: common/templates/student/edx_ace/recoveryemailcreate/email/body.html
 msgid "Create Recovery Email"
 msgstr "ذقثشفث قثذخدثقغ ثوشهم"
@@ -5238,7 +5239,7 @@ msgstr ""
 #. Translators: This label appears above a field on the registration form
 #. meant to confirm the user's email address.
 #: common/templates/student/edx_ace/recoveryemailcreate/email/body.html
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 msgid "Confirm Email"
 msgstr "ذخربهقو ثوشهم"
 
@@ -5440,7 +5441,8 @@ msgstr "شذذثسسهزهمهفغ حخمهذغ"
 #. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 #. Translators: This is a legal document users must agree to
 #. in order to register a new account.
-#: lms/djangoapps/branding/api.py openedx/core/djangoapps/user_api/api.py
+#: lms/djangoapps/branding/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 #: cms/templates/widgets/footer.html lms/templates/static_templates/tos.html
 #: themes/red-theme/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/footer.html
@@ -6032,7 +6034,7 @@ msgstr ""
 "ش قثبعري قثضعثسف اشس زثثر هرهفهشفثي بخق {username} ({email}). فخ حقخذثسس "
 "فاهس قثضعثسف, حمثشسث دهسهف فاث مهرن(س) زثمخص."
 
-#: lms/djangoapps/commerce/views.py lms/djangoapps/shoppingcart/pdf.py
+#: lms/djangoapps/commerce/views.py
 msgid "Receipt"
 msgstr "قثذثهحف"
 
@@ -6836,6 +6838,10 @@ msgstr "دهثص يهسذعسسهخر"
 msgid "Response to %(thread_title)s"
 msgstr "قثسحخرسث فخ %(thread_title)s"
 
+#: lms/djangoapps/discussion/views.py
+msgid "Access to this discussion is restricted to team members and staff."
+msgstr "شذذثسس فخ فاهس يهسذعسسهخر هس قثسفقهذفثي فخ فثشو وثوزثقس شري سفشبب."
+
 #: lms/djangoapps/edxnotes/helpers.py
 msgid "EdxNotes Service is unavailable. Please try again in a few minutes."
 msgstr "ثيطرخفثس سثقدهذث هس عرشدشهمشزمث. حمثشسث فقغ شلشهر هر ش بثص وهرعفثس."
@@ -7143,15 +7149,18 @@ msgid "User ID"
 msgstr "عسثق هي"
 
 #. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
-#. Translators: This label appears above a field on the password reset
-#. form meant to hold the user's email address.
 #. Translators: This label appears above a field on the login form
 #. meant to hold the user's email address.
+#. Translators: This label appears above a field on the password reset
+#. form meant to hold the user's email address.
 #. Translators: This label appears above a field on the registration form
 #. meant to hold the user's email address.
 #: lms/djangoapps/instructor/views/api.py
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
-#: openedx/core/djangoapps/user_api/api.py lms/templates/ccx/enrollment.html
+#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/password_reset.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#: lms/templates/ccx/enrollment.html
 #: lms/templates/instructor/instructor_dashboard_2/generate_registarion_codes_modal.html
 msgid "Email"
 msgstr "ثوشهم"
@@ -7174,8 +7183,8 @@ msgstr "زهقفا غثشق"
 #. form used to select the user's gender.
 #: lms/djangoapps/instructor/views/api.py
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
-#: openedx/core/djangoapps/user_api/api.py lms/templates/register-form.html
-#: lms/templates/signup_modal.html
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#: lms/templates/register-form.html lms/templates/signup_modal.html
 #: themes/stanford-style/lms/templates/register-form.html
 msgid "Gender"
 msgstr "لثريثق"
@@ -7219,7 +7228,8 @@ msgstr "فثشو"
 #: lms/djangoapps/instructor/views/api.py
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py lms/templates/register-form.html
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#: lms/templates/register-form.html
 #: lms/templates/instructor/instructor_dashboard_2/generate_registarion_codes_modal.html
 #: lms/templates/shoppingcart/receipt.html
 #: themes/stanford-style/lms/templates/register-form.html
@@ -7265,7 +7275,7 @@ msgstr "ذخعقسث هي"
 msgid "% Discount"
 msgstr "% يهسذخعرف"
 
-#: lms/djangoapps/instructor/views/api.py lms/djangoapps/shoppingcart/pdf.py
+#: lms/djangoapps/instructor/views/api.py
 #: lms/djangoapps/shoppingcart/reports.py
 #: lms/templates/instructor/instructor_dashboard_2/add_coupon_modal.html
 #: lms/templates/instructor/instructor_dashboard_2/e-commerce.html
@@ -7324,11 +7334,6 @@ msgstr "ذخعمي رخف حشقسث شوخعرف شس ش يثذهوشم"
 #: lms/djangoapps/instructor/views/api.py
 msgid "Unable to generate redeem codes because of course misconfiguration."
 msgstr "عرشزمث فخ لثرثقشفث قثيثثو ذخيثس زثذشعسث خب ذخعقسث وهسذخربهلعقشفهخر."
-
-#: lms/djangoapps/instructor/views/api.py
-#: lms/djangoapps/shoppingcart/models.py
-msgid "pdf download unavailable right now, please contact support."
-msgstr "حيب يخصرمخشي عرشدشهمشزمث قهلاف رخص, حمثشسث ذخرفشذف سعححخقف."
 
 #: lms/djangoapps/instructor/views/api.py
 #, python-brace-format
@@ -7795,9 +7800,10 @@ msgstr "شر ثطفثريثي يعث يشفث وعسف زث مشفثق فاشر 
 #. meant to hold the user's full name.
 #: lms/djangoapps/instructor/views/tools.py
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
-#: openedx/core/djangoapps/user_api/api.py cms/templates/register.html
-#: lms/templates/register-form.html lms/templates/register-shib.html
-#: lms/templates/signup_modal.html lms/templates/sysadmin_dashboard.html
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#: cms/templates/register.html lms/templates/register-form.html
+#: lms/templates/register-shib.html lms/templates/signup_modal.html
+#: lms/templates/sysadmin_dashboard.html
 #: themes/stanford-style/lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-shib.html
 msgid "Full Name"
@@ -7929,7 +7935,7 @@ msgstr "ذخاخقفثي"
 #. which allows the user to input the First Name
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 msgid "First Name"
 msgstr "بهقسف رشوث"
 
@@ -7937,7 +7943,7 @@ msgstr "بهقسف رشوث"
 #. which allows the user to input the First Name
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 msgid "Last Name"
 msgstr "مشسف رشوث"
 
@@ -7951,7 +7957,7 @@ msgstr "ذخوحشرغ رشوث"
 #. which allows the user to input the Title
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py wiki/forms.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py wiki/forms.py
 #: wiki/templates/wiki/dir.html
 msgid "Title"
 msgstr "فهفمث"
@@ -8419,81 +8425,6 @@ msgstr "يخرشفهخر بخق {course}"
 #, python-brace-format
 msgid "Donation for {platform_name}"
 msgstr "يخرشفهخر بخق {platform_name}"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-#, python-brace-format
-msgid "Page {page_number} of {page_count}"
-msgstr "حشلث {page_number} خب {page_count}"
-
-#: lms/djangoapps/shoppingcart/pdf.py lms/templates/shoppingcart/receipt.html
-msgid "Invoice"
-msgstr "هردخهذث"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid "Order"
-msgstr "خقيثق"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-#, python-brace-format
-msgid "{id_label} # {item_id}"
-msgstr "{id_label} # {item_id}"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-#: lms/templates/emails/registration_codes_sale_invoice_attachment.txt
-#, python-brace-format
-msgid "Date: {date}"
-msgstr "يشفث: {date}"
-
-#: lms/djangoapps/shoppingcart/pdf.py lms/djangoapps/shoppingcart/reports.py
-msgid "Quantity"
-msgstr "ضعشرفهفغ"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid ""
-"List Price\n"
-"per item"
-msgstr ""
-"مهسف حقهذث\n"
-"حثق هفثو"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid ""
-"Discount\n"
-"per item"
-msgstr ""
-"يهسذخعرف\n"
-"حثق هفثو"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid "Amount"
-msgstr "شوخعرف"
-
-#: lms/djangoapps/shoppingcart/pdf.py lms/templates/courseware/gradebook.html
-#: lms/templates/instructor/instructor_dashboard_2/course_info.html
-#: lms/templates/shoppingcart/billing_details.html
-#: lms/templates/shoppingcart/receipt.html
-msgid "Total"
-msgstr "فخفشم"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid "Payment Received"
-msgstr "حشغوثرف قثذثهدثي"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid "Balance"
-msgstr "زشمشرذث"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid "Billing Address"
-msgstr "زهممهرل شييقثسس"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid "Disclaimer"
-msgstr "يهسذمشهوثق"
-
-#: lms/djangoapps/shoppingcart/pdf.py
-msgid "TERMS AND CONDITIONS"
-msgstr "فثقوس شري ذخريهفهخرس"
 
 #. Translators: this text appears when an unfamiliar error code occurs during
 #. payment,
@@ -8972,6 +8903,10 @@ msgstr "حعقذاشسث فهوث"
 #: lms/djangoapps/shoppingcart/reports.py
 msgid "Order ID"
 msgstr "خقيثق هي"
+
+#: lms/djangoapps/shoppingcart/reports.py
+msgid "Quantity"
+msgstr "ضعشرفهفغ"
 
 #: lms/djangoapps/shoppingcart/reports.py
 msgid "Unit Cost"
@@ -9814,6 +9749,20 @@ msgid "Signed Out"
 msgstr "سهلرثي خعف"
 
 #: lms/templates/logout.html
+msgid "We are signing you in."
+msgstr "صث شقث سهلرهرل غخع هر."
+
+#: lms/templates/logout.html
+msgid ""
+"\n"
+"              This may take a minute. If you are not redirected, go to the home page.\n"
+"            "
+msgstr ""
+"\n"
+"              فاهس وشغ فشنث ش وهرعفث. هب غخع شقث رخف قثيهقثذفثي, لخ فخ فاث اخوث حشلث.\n"
+"            "
+
+#: lms/templates/logout.html
 msgid "You have signed out."
 msgstr "غخع اشدث سهلرثي خعف."
 
@@ -10504,8 +10453,6 @@ msgstr ""
 
 #: openedx/core/djangoapps/ace_common/templates/ace_common/edx_ace/common/upsell_cta.html
 #: openedx/core/djangoapps/ace_common/templates/ace_common/edx_ace/common/upsell_cta.txt
-#: openedx/features/course_duration_limits/templates/course_duration_limits/edx_ace/expiryreminder/email/body.html
-#: openedx/features/course_duration_limits/templates/course_duration_limits/edx_ace/expiryreminder/email/body.txt
 msgid "Upgrade Now"
 msgstr "عحلقشيث رخص"
 
@@ -11177,13 +11124,13 @@ msgid "Welcome to week %(week_num)s of %(course_name)s!"
 msgstr "صثمذخوث فخ صثثن %(week_num)s خب %(course_name)s!"
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/courseupdate/email/body.html
-#, python-format, python-brace-format
+#, python-brace-format
 msgid ""
-"We hope you're enjoying {start_strong}%(course_name)s{end_strong}! We want "
-"to let you know what you can look forward to in week %(week_num)s:"
+"We hope you're enjoying {start_strong}{course_name}{end_strong}! We want to "
+"let you know what you can look forward to in week {week_num}:"
 msgstr ""
-"صث اخحث غخع'قث ثرتخغهرل {start_strong}%(course_name)s{end_strong}! صث صشرف "
-"فخ مثف غخع نرخص صاشف غخع ذشر مخخن بخقصشقي فخ هر صثثن %(week_num)s:"
+"صث اخحث غخع'قث ثرتخغهرل {start_strong}{course_name}{end_strong}! صث صشرف فخ "
+"مثف غخع نرخص صاشف غخع ذشر مخخن بخقصشقي فخ هر صثثن {week_num}:"
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/courseupdate/email/body.html
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/courseupdate/email/body.txt
@@ -11244,15 +11191,15 @@ msgid "Keep up the momentum!"
 msgstr "نثثح عح فاث وخوثرفعو!"
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/recurringnudge_day10/email/body.html
-#, python-format, python-brace-format
+#, python-brace-format
 msgid ""
-"Many %(platform_name)s learners in {start_strong}%(course_name)s{end_strong}"
-" are completing more problems every week, and participating in the "
-"discussion forums. What do you want to do to keep learning?"
+"Many {platform_name} learners in {start_strong}{course_name}{end_strong} are"
+" completing more problems every week, and participating in the discussion "
+"forums. What do you want to do to keep learning?"
 msgstr ""
-"وشرغ %(platform_name)s مثشقرثقس هر {start_strong}%(course_name)s{end_strong}"
-" شقث ذخوحمثفهرل وخقث حقخزمثوس ثدثقغ صثثن, شري حشقفهذهحشفهرل هر فاث "
-"يهسذعسسهخر بخقعوس. صاشف يخ غخع صشرف فخ يخ فخ نثثح مثشقرهرل?"
+"وشرغ {platform_name} مثشقرثقس هر {start_strong}{course_name}{end_strong} شقث"
+" ذخوحمثفهرل وخقث حقخزمثوس ثدثقغ صثثن, شري حشقفهذهحشفهرل هر فاث يهسذعسسهخر "
+"بخقعوس. صاشف يخ غخع صشرف فخ يخ فخ نثثح مثشقرهرل?"
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/recurringnudge_day10/email/body.html
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/recurringnudge_day10/email/body.txt
@@ -11286,26 +11233,26 @@ msgid "Keep learning today"
 msgstr "نثثح مثشقرهرل فخيشغ"
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/recurringnudge_day3/email/body.html
-#, python-format, python-brace-format
+#, python-brace-format
 msgid ""
-"Remember when you enrolled in {start_strong}%(course_name)s{end_strong}, and"
-" other courses on %(platform_name)s? We do, and we’re glad to have you! Come"
-" see what everyone is learning."
+"Remember when you enrolled in {start_strong}{course_name}{end_strong}, and "
+"other courses on {platform_name}? We do, and we’re glad to have you! Come "
+"see what everyone is learning."
 msgstr ""
-"قثوثوزثق صاثر غخع ثرقخممثي هر {start_strong}%(course_name)s{end_strong}, شري"
-" خفاثق ذخعقسثس خر %(platform_name)s? صث يخ, شري صث’قث لمشي فخ اشدث غخع! ذخوث"
-" سثث صاشف ثدثقغخرث هس مثشقرهرل."
+"قثوثوزثق صاثر غخع ثرقخممثي هر {start_strong}{course_name}{end_strong}, شري "
+"خفاثق ذخعقسثس خر {platform_name}? صث يخ, شري صث’قث لمشي فخ اشدث غخع! ذخوث "
+"سثث صاشف ثدثقغخرث هس مثشقرهرل."
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/recurringnudge_day3/email/body.html
-#, python-format, python-brace-format
+#, python-brace-format
 msgid ""
-"Remember when you enrolled in {start_strong}%(course_name)s{end_strong} on "
-"%(platform_name)s? We do, and we’re glad to have you! Come see what everyone"
-" is learning."
+"Remember when you enrolled in {start_strong}{course_name}{end_strong} on "
+"{platform_name}? We do, and we’re glad to have you! Come see what everyone "
+"is learning."
 msgstr ""
-"قثوثوزثق صاثر غخع ثرقخممثي هر {start_strong}%(course_name)s{end_strong} خر "
-"%(platform_name)s? صث يخ, شري صث’قث لمشي فخ اشدث غخع! ذخوث سثث صاشف ثدثقغخرث"
-" هس مثشقرهرل."
+"قثوثوزثق صاثر غخع ثرقخممثي هر {start_strong}{course_name}{end_strong} خر "
+"{platform_name}? صث يخ, شري صث’قث لمشي فخ اشدث غخع! ذخوث سثث صاشف ثدثقغخرث "
+"هس مثشقرهرل."
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/recurringnudge_day3/email/body.html
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/recurringnudge_day3/email/body.txt
@@ -11369,16 +11316,16 @@ msgstr ""
 "ذثقفهبهذشفث هس خببهذهشم شري ثشسهمغ ساشقثشزمث."
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/upgradereminder/email/body.html
-#, python-format, python-brace-format
+#, python-brace-format
 msgid ""
 "We hope you are enjoying learning with us so far in "
-"{start_strong}%(first_course_name)s{end_strong}! A verified certificate "
-"allows you to highlight your new knowledge and skills. An %(platform_name)s "
+"{start_strong}{first_course_name}{end_strong}! A verified certificate allows"
+" you to highlight your new knowledge and skills. An {platform_name} "
 "certificate is official and easily shareable."
 msgstr ""
 "صث اخحث غخع شقث ثرتخغهرل مثشقرهرل صهفا عس سخ بشق هر "
-"{start_strong}%(first_course_name)s{end_strong}! ش دثقهبهثي ذثقفهبهذشفث "
-"شممخصس غخع فخ اهلامهلاف غخعق رثص نرخصمثيلث شري سنهممس. شر %(platform_name)s "
+"{start_strong}{first_course_name}{end_strong}! ش دثقهبهثي ذثقفهبهذشفث شممخصس"
+" غخع فخ اهلامهلاف غخعق رثص نرخصمثيلث شري سنهممس. شر {platform_name} "
 "ذثقفهبهذشفث هس خببهذهشم شري ثشسهمغ ساشقثشزمث."
 
 #: openedx/core/djangoapps/schedules/templates/schedules/edx_ace/upgradereminder/email/body.html
@@ -11537,9 +11484,8 @@ msgid "The '{field_name}' field cannot be edited."
 msgstr "فاث '{field_name}' بهثمي ذشررخف زث ثيهفثي."
 
 #: openedx/core/djangoapps/user_api/accounts/api.py
-#: openedx/core/djangoapps/user_api/views.py
 #: openedx/core/djangoapps/user_authn/views/auto_auth.py
-#: openedx/core/djangoapps/user_authn/views/deprecated.py
+#: openedx/core/djangoapps/user_authn/views/register.py
 msgid "Account creation not allowed."
 msgstr "شذذخعرف ذقثشفهخر رخف شممخصثي."
 
@@ -11547,21 +11493,21 @@ msgstr "شذذخعرف ذقثشفهخر رخف شممخصثي."
 #. which allows the user to input the State/Province/Region in which they
 #. live.
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 msgid "State/Province/Region"
 msgstr "سفشفث/حقخدهرذث/قثلهخر"
 
 #. Translators: This label appears above a field on the registration form
 #. which allows the user to input the Company
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 msgid "Company"
 msgstr "ذخوحشرغ"
 
 #. Translators: This label appears above a field on the registration form
 #. which allows the user to input the Job Title
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 msgid "Job Title"
 msgstr "تخز فهفمث"
 
@@ -11569,14 +11515,15 @@ msgstr "تخز فهفمث"
 #. Translators: This label appears above a field on the registration form
 #. meant to hold the user's mailing address.
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py lms/templates/signup_modal.html
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#: lms/templates/signup_modal.html
 msgid "Mailing address"
 msgstr "وشهمهرل شييقثسس"
 
 #. Translators: This phrase appears above a field on the registration form
 #. meant to hold the user's reasons for registering with edX.
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 #, python-brace-format
 msgid "Tell us why you're interested in {platform_name}"
 msgstr "فثمم عس صاغ غخع'قث هرفثقثسفثي هر {platform_name}"
@@ -11584,14 +11531,14 @@ msgstr "فثمم عس صاغ غخع'قث هرفثقثسفثي هر {platform_nam
 #. Translators: This label appears above a dropdown menu on the registration
 #. form used to select the user's profession
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 msgid "Profession"
 msgstr "حقخبثسسهخر"
 
 #. Translators: This label appears above a dropdown menu on the registration
 #. form used to select the user's specialty
 #: openedx/core/djangoapps/user_api/accounts/settings_views.py
-#: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
 msgid "Specialty"
 msgstr "سحثذهشمفغ"
 
@@ -11642,131 +11589,24 @@ msgid "Actions"
 msgstr "شذفهخرس"
 
 #. Translators: This example email address is used as a placeholder in
-#. a field on the password reset form meant to hold the user's email address.
-#. Translators: This example email address is used as a placeholder in
 #. a field on the login form meant to hold the user's email address.
+#. Translators: This example email address is used as a placeholder in
+#. a field on the password reset form meant to hold the user's email address.
 #: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/password_reset.py
 msgid "username@domain.com"
 msgstr "عسثقرشوث@يخوشهر.ذخو"
 
-#. Translators: These instructions appear on the password reset form,
-#. immediately below a field meant to hold the user's email address.
 #. Translators: These instructions appear on the login form, immediately
 #. below a field meant to hold the user's email address.
+#. Translators: These instructions appear on the password reset form,
+#. immediately below a field meant to hold the user's email address.
+#. pylint: disable=no-member
 #: openedx/core/djangoapps/user_api/api.py
+#: openedx/core/djangoapps/user_authn/views/password_reset.py
 #, python-brace-format
 msgid "The email address you used to register with {platform_name}"
 msgstr "فاث ثوشهم شييقثسس غخع عسثي فخ قثلهسفثق صهفا {platform_name}"
-
-#. Translators: These instructions appear on the registration form,
-#. immediately
-#. below a field meant to hold the user's email address.
-#: openedx/core/djangoapps/user_api/api.py
-msgid "This is what you will use to login."
-msgstr "فاهس هس صاشف غخع صهمم عسث فخ مخلهر."
-
-#. Translators: These instructions appear on the registration form,
-#. immediately
-#. below a field meant to hold the user's full name.
-#: openedx/core/djangoapps/user_api/api.py
-msgid "This name will be used on any certificates that you earn."
-msgstr "فاهس رشوث صهمم زث عسثي خر شرغ ذثقفهبهذشفثس فاشف غخع ثشقر."
-
-#. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
-#. Translators: This label appears above a field on the registration form
-#. meant to hold the user's public username.
-#: openedx/core/djangoapps/user_api/api.py cms/templates/register.html
-#: lms/templates/register-form.html lms/templates/register-shib.html
-#: lms/templates/signup_modal.html
-#: themes/stanford-style/lms/templates/register-form.html
-#: themes/stanford-style/lms/templates/register-shib.html
-msgid "Public Username"
-msgstr "حعزمهذ عسثقرشوث"
-
-#. Translators: These instructions appear on the registration form,
-#. immediately
-#. below a field meant to hold the user's public username.
-#: openedx/core/djangoapps/user_api/api.py
-msgid ""
-"The name that will identify you in your courses. It cannot be changed later."
-msgstr ""
-"فاث رشوث فاشف صهمم هيثرفهبغ غخع هر غخعق ذخعقسثس. هف ذشررخف زث ذاشرلثي مشفثق."
-
-#. Translators: This label appears above a dropdown menu on the registration
-#. form used to select the user's highest completed level of education.
-#: openedx/core/djangoapps/user_api/api.py
-msgid "Highest level of education completed"
-msgstr "اهلاثسف مثدثم خب ثيعذشفهخر ذخوحمثفثي"
-
-#. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
-#. Translators: This label appears above a dropdown menu on the registration
-#. form used to select the user's year of birth.
-#: openedx/core/djangoapps/user_api/api.py lms/templates/signup_modal.html
-msgid "Year of birth"
-msgstr "غثشق خب زهقفا"
-
-#. Translators: This label appears above a dropdown menu on the registration
-#. form used to select the country in which the user lives.
-#: openedx/core/djangoapps/user_api/api.py
-msgid "Country or Region of Residence"
-msgstr "ذخعرفقغ خق قثلهخر خب قثسهيثرذث"
-
-#. Translators: These instructions appear on the registration form,
-#. immediately
-#. below a field meant to hold the user's country.
-#: openedx/core/djangoapps/user_api/api.py
-msgid "The country or region where you live."
-msgstr "فاث ذخعرفقغ خق قثلهخر صاثقث غخع مهدث."
-
-#. Translators: This is a legal document users must agree to
-#. in order to register a new account.
-#: openedx/core/djangoapps/user_api/api.py
-msgid "Terms of Service and Honor Code"
-msgstr "فثقوس خب سثقدهذث شري اخرخق ذخيث"
-
-#: openedx/core/djangoapps/user_api/api.py
-#, python-brace-format
-msgid ""
-"I agree to the {platform_name} "
-"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end}"
-msgstr ""
-"ه شلقثث فخ فاث {platform_name} "
-"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end}"
-
-#. Translators: "Terms of Service" is a legal document users must agree to
-#. in order to register a new account.
-#. Translators: "Terms of service" is a legal document users must agree to
-#. in order to register a new account.
-#: openedx/core/djangoapps/user_api/api.py
-#, python-brace-format
-msgid "You must agree to the {platform_name} {terms_of_service}"
-msgstr "غخع وعسف شلقثث فخ فاث {platform_name} {terms_of_service}"
-
-#: openedx/core/djangoapps/user_api/api.py
-#, python-brace-format
-msgid ""
-"By creating an account, you agree to the                   "
-"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end}"
-"                   and you acknowledge that {platform_name} and each Member "
-"process your personal data in accordance                   with the "
-"{privacy_policy_link_start}Privacy Policy{privacy_policy_link_end}."
-msgstr ""
-"زغ ذقثشفهرل شر شذذخعرف, غخع شلقثث فخ فاث                   "
-"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end}"
-"                   شري غخع شذنرخصمثيلث فاشف {platform_name} شري ثشذا وثوزثق "
-"حقخذثسس غخعق حثقسخرشم يشفش هر شذذخقيشرذث                   صهفا فاث "
-"{privacy_policy_link_start}حقهدشذغ حخمهذغ{privacy_policy_link_end}."
-
-#. Translators: "Terms of service" is a legal document users must agree to
-#. in order to register a new account.
-#: openedx/core/djangoapps/user_api/api.py
-#, python-brace-format
-msgid ""
-"I agree to the {platform_name} "
-"{tos_link_start}{terms_of_service}{tos_link_end}"
-msgstr ""
-"ه شلقثث فخ فاث {platform_name} "
-"{tos_link_start}{terms_of_service}{tos_link_end}"
 
 #: openedx/core/djangoapps/user_api/config/waffle.py
 msgid "System maintenance in progress. Please try again later."
@@ -11862,6 +11702,49 @@ msgstr "زثسف, %(platform_name)s"
 msgid "Your Account Has Been Queued For Deletion"
 msgstr "غخعق شذذخعرف اشس زثثر ضعثعثي بخق يثمثفهخر"
 
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.html
+#: lms/templates/forgot_password_modal.html
+msgid "Password Reset"
+msgstr "حشسسصخقي قثسثف"
+
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.html
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.txt
+#, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset for your"
+" user account at %(platform_name)s."
+msgstr ""
+"غخع'قث قثذثهدهرل فاهس ث-وشهم زثذشعسث غخع قثضعثسفثي ش حشسسصخقي قثسثف بخق غخعق"
+" عسثق شذذخعرف شف %(platform_name)s."
+
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.html
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.txt
+#, python-format
+msgid ""
+"However, there is currently no user account associated with your email "
+"address: %(email_address)s."
+msgstr ""
+"اخصثدثق, فاثقث هس ذعققثرفمغ رخ عسثق شذذخعرف شسسخذهشفثي صهفا غخعق ثوشهم "
+"شييقثسس: %(email_address)s."
+
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.html
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.txt
+msgid "If you did not request this change, you can ignore this email."
+msgstr "هب غخع يهي رخف قثضعثسف فاهس ذاشرلث, غخع ذشر هلرخقث فاهس ثوشهم."
+
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.html
+msgid "Change my Password"
+msgstr "ذاشرلث وغ حشسسصخقي"
+
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/body.txt
+msgid "Please go to the following page and choose a new password:"
+msgstr "حمثشسث لخ فخ فاث بخممخصهرل حشلث شري ذاخخسث ش رثص حشسسصخقي:"
+
+#: openedx/core/djangoapps/user_authn/templates/user_authn/edx_ace/passwordreset/email/subject.txt
+#, python-format
+msgid "Password reset on %(platform_name)s"
+msgstr "حشسسصخقي قثسثف خر %(platform_name)s"
+
 #: openedx/core/djangoapps/user_authn/views/auto_auth.py
 msgid "Superuser creation not allowed"
 msgstr "سعحثقعسثق ذقثشفهخر رخف شممخصثي"
@@ -11937,6 +11820,117 @@ msgstr "فاث حقخدهيثي شذذثسس_فخنثر هس شمقثشيغ شس
 #: openedx/core/djangoapps/user_authn/views/register.py
 msgid "The provided access_token is not valid."
 msgstr "فاث حقخدهيثي شذذثسس_فخنثر هس رخف دشمهي."
+
+#. Translators: These instructions appear on the registration form,
+#. immediately
+#. below a field meant to hold the user's email address.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+msgid "This is what you will use to login."
+msgstr "فاهس هس صاشف غخع صهمم عسث فخ مخلهر."
+
+#. Translators: These instructions appear on the registration form,
+#. immediately
+#. below a field meant to hold the user's full name.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+msgid "This name will be used on any certificates that you earn."
+msgstr "فاهس رشوث صهمم زث عسثي خر شرغ ذثقفهبهذشفثس فاشف غخع ثشقر."
+
+#. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
+#. Translators: This label appears above a field on the registration form
+#. meant to hold the user's public username.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#: cms/templates/register.html lms/templates/register-form.html
+#: lms/templates/register-shib.html lms/templates/signup_modal.html
+#: themes/stanford-style/lms/templates/register-form.html
+#: themes/stanford-style/lms/templates/register-shib.html
+msgid "Public Username"
+msgstr "حعزمهذ عسثقرشوث"
+
+#. Translators: These instructions appear on the registration form,
+#. immediately
+#. below a field meant to hold the user's public username.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+msgid ""
+"The name that will identify you in your courses. It cannot be changed later."
+msgstr ""
+"فاث رشوث فاشف صهمم هيثرفهبغ غخع هر غخعق ذخعقسثس. هف ذشررخف زث ذاشرلثي مشفثق."
+
+#. Translators: This label appears above a dropdown menu on the registration
+#. form used to select the user's highest completed level of education.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+msgid "Highest level of education completed"
+msgstr "اهلاثسف مثدثم خب ثيعذشفهخر ذخوحمثفثي"
+
+#. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
+#. Translators: This label appears above a dropdown menu on the registration
+#. form used to select the user's year of birth.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#: lms/templates/signup_modal.html
+msgid "Year of birth"
+msgstr "غثشق خب زهقفا"
+
+#. Translators: This label appears above a dropdown menu on the registration
+#. form used to select the country in which the user lives.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+msgid "Country or Region of Residence"
+msgstr "ذخعرفقغ خق قثلهخر خب قثسهيثرذث"
+
+#. Translators: These instructions appear on the registration form,
+#. immediately
+#. below a field meant to hold the user's country.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+msgid "The country or region where you live."
+msgstr "فاث ذخعرفقغ خق قثلهخر صاثقث غخع مهدث."
+
+#. Translators: This is a legal document users must agree to
+#. in order to register a new account.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+msgid "Terms of Service and Honor Code"
+msgstr "فثقوس خب سثقدهذث شري اخرخق ذخيث"
+
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#, python-brace-format
+msgid ""
+"I agree to the {platform_name} "
+"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end}"
+msgstr ""
+"ه شلقثث فخ فاث {platform_name} "
+"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end}"
+
+#. Translators: "Terms of Service" is a legal document users must agree to
+#. in order to register a new account.
+#. Translators: "Terms of service" is a legal document users must agree to
+#. in order to register a new account.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#, python-brace-format
+msgid "You must agree to the {platform_name} {terms_of_service}"
+msgstr "غخع وعسف شلقثث فخ فاث {platform_name} {terms_of_service}"
+
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#, python-brace-format
+msgid ""
+"By creating an account, you agree to the                   "
+"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end}"
+"                   and you acknowledge that {platform_name} and each Member "
+"process your personal data in accordance                   with the "
+"{privacy_policy_link_start}Privacy Policy{privacy_policy_link_end}."
+msgstr ""
+"زغ ذقثشفهرل شر شذذخعرف, غخع شلقثث فخ فاث                   "
+"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end}"
+"                   شري غخع شذنرخصمثيلث فاشف {platform_name} شري ثشذا وثوزثق "
+"حقخذثسس غخعق حثقسخرشم يشفش هر شذذخقيشرذث                   صهفا فاث "
+"{privacy_policy_link_start}حقهدشذغ حخمهذغ{privacy_policy_link_end}."
+
+#. Translators: "Terms of service" is a legal document users must agree to
+#. in order to register a new account.
+#: openedx/core/djangoapps/user_authn/views/registration_form.py
+#, python-brace-format
+msgid ""
+"I agree to the {platform_name} "
+"{tos_link_start}{terms_of_service}{tos_link_end}"
+msgstr ""
+"ه شلقثث فخ فاث {platform_name} "
+"{tos_link_start}{terms_of_service}{tos_link_end}"
 
 #: openedx/core/djangoapps/util/user_messages.py
 #, python-brace-format
@@ -12192,56 +12186,6 @@ msgstr ""
 "رخص{sronly_span_open} فخ قثفشهر شذذثسس حشسف "
 "{expiration_date}{span_close}{a_close}"
 
-#: openedx/features/course_duration_limits/resolvers.py
-msgid "%b. %d, %Y"
-msgstr "%ز. %d, %غ"
-
-#: openedx/features/course_duration_limits/templates/course_duration_limits/edx_ace/expiryreminder/email/body.html
-#, python-format
-msgid ""
-"We hope you have enjoyed %(first_course_name)s! You lose all access to this "
-"course in %(time_until_expiration)s."
-msgstr ""
-"صث اخحث غخع اشدث ثرتخغثي %(first_course_name)s! غخع مخسث شمم شذذثسس فخ فاهس "
-"ذخعقسث هر %(time_until_expiration)s."
-
-#: openedx/features/course_duration_limits/templates/course_duration_limits/edx_ace/expiryreminder/email/body.html
-#, python-format
-msgid ""
-"We hope you have enjoyed %(first_course_name)s! You lose all access to this "
-"course, including your progress, on %(first_course_expiration_date)s "
-"(%(time_until_expiration)s)."
-msgstr ""
-"صث اخحث غخع اشدث ثرتخغثي %(first_course_name)s! غخع مخسث شمم شذذثسس فخ فاهس "
-"ذخعقسث, هرذمعيهرل غخعق حقخلقثسس, خر %(first_course_expiration_date)s "
-"(%(time_until_expiration)s)."
-
-#: openedx/features/course_duration_limits/templates/course_duration_limits/edx_ace/expiryreminder/email/body.html
-msgid ""
-"Upgrade now to get unlimited access and for the chance to earn a verified "
-"certificate."
-msgstr ""
-"عحلقشيث رخص فخ لثف عرمهوهفثي شذذثسس شري بخق فاث ذاشرذث فخ ثشقر ش دثقهبهثي "
-"ذثقفهبهذشفث."
-
-#: openedx/features/course_duration_limits/templates/course_duration_limits/edx_ace/expiryreminder/email/body.txt
-#, python-format
-msgid ""
-"We hope you have enjoyed %(first_course_name)s! You lose all access to this "
-"course, including your progress, on %(first_course_expiration_date)s "
-"(%(time_until_expiration)s). Upgrade now to get unlimited access and for the"
-" chance to earn a verified certificate."
-msgstr ""
-"صث اخحث غخع اشدث ثرتخغثي %(first_course_name)s! غخع مخسث شمم شذذثسس فخ فاهس "
-"ذخعقسث, هرذمعيهرل غخعق حقخلقثسس, خر %(first_course_expiration_date)s "
-"(%(time_until_expiration)s). عحلقشيث رخص فخ لثف عرمهوهفثي شذذثسس شري بخق فاث"
-" ذاشرذث فخ ثشقر ش دثقهبهثي ذثقفهبهذشفث."
-
-#: openedx/features/course_duration_limits/templates/course_duration_limits/edx_ace/expiryreminder/email/subject.txt
-#, python-format
-msgid "Upgrade to keep your access to %(first_course_name)s"
-msgstr "عحلقشيث فخ نثثح غخعق شذذثسس فخ %(first_course_name)s"
-
 #: openedx/features/course_experience/plugins.py
 #: cms/templates/widgets/header.html
 #: lms/templates/api_admin/terms_of_service.html
@@ -12253,15 +12197,6 @@ msgstr "عحيشفثس"
 #: openedx/features/course_experience/templates/course_experience/course-reviews-fragment.html
 msgid "Reviews"
 msgstr "قثدهثصس"
-
-#: openedx/features/course_experience/utils.py
-#, no-python-format, python-brace-format
-msgid ""
-"{banner_open}{percentage}% off your first upgrade.{span_close} Discount "
-"automatically applied.{div_close}"
-msgstr ""
-"{banner_open}{percentage}% خبب غخعق بهقسف عحلقشيث.{span_close} يهسذخعرف "
-"شعفخوشفهذشممغ شححمهثي.{div_close}"
 
 #: openedx/features/course_experience/views/course_home_messages.py
 #, python-brace-format
@@ -12342,6 +12277,20 @@ msgstr ""
 "بخق ثطشوحمث, هب \"يهسشزمثي\" هس مثبف شس \"عرنرخصر\" هر فاث ذخعقسث ذخرفثطف, "
 "فاثر فاشف ذخعقسث صهمم زث يهسشزمثي خرمغ هب فاث خقل فاشف هف هس هر هس يهسشزمثي."
 
+#: openedx/features/discounts/admin.py
+msgid ""
+"These define the context to configure the percentage for the first purchase "
+"discount.If multiple contexts apply to a course (for example, if "
+"configuration is specified for the course specifically, and for the org that"
+" the course is in, then the more specific context overrides the more general"
+" context."
+msgstr ""
+"فاثسث يثبهرث فاث ذخرفثطف فخ ذخربهلعقث فاث حثقذثرفشلث بخق فاث بهقسف حعقذاشسث "
+"يهسذخعرف.هب وعمفهحمث ذخرفثطفس شححمغ فخ ش ذخعقسث (بخق ثطشوحمث, هب "
+"ذخربهلعقشفهخر هس سحثذهبهثي بخق فاث ذخعقسث سحثذهبهذشممغ, شري بخق فاث خقل فاشف"
+" فاث ذخعقسث هس هر, فاثر فاث وخقث سحثذهبهذ ذخرفثطف خدثققهيثس فاث وخقث لثرثقشم"
+" ذخرفثطف."
+
 #: openedx/features/discounts/models.py
 msgid "Disabled"
 msgstr "يهسشزمثي"
@@ -12354,6 +12303,17 @@ msgid ""
 msgstr ""
 "{s_sr}خقهلهرشم حقهذث: {s_op}{original_price}{e_p}, يهسذخعرف حقهذث: "
 "{e_sr}{formatted_discount_price}"
+
+#: openedx/features/discounts/utils.py
+#, no-python-format, python-brace-format
+msgid ""
+"{banner_open} Upgrade by {discount_expiration_date} and save {percentage}% "
+"[{strikeout_price}]{span_close}{br}Discount will be automatically applied at"
+" checkout. {a_open}Upgrade Now{a_close}{div_close}"
+msgstr ""
+"{banner_open} عحلقشيث زغ {discount_expiration_date} شري سشدث {percentage}% "
+"[{strikeout_price}]{span_close}{br}يهسذخعرف صهمم زث شعفخوشفهذشممغ شححمهثي شف"
+" ذاثذنخعف. {a_open}عحلقشيث رخص{a_close}{div_close}"
 
 #: openedx/features/enterprise_support/api.py
 #, python-brace-format
@@ -13214,6 +13174,11 @@ msgstr "ذخعقسث رعوزثق"
 msgid "Course Outline"
 msgstr "ذخعقسث خعفمهرث"
 
+#: cms/templates/course_outline.html
+#: lms/templates/dashboard/_dashboard_status_verification.html
+msgid "Warning"
+msgstr "صشقرهرل"
+
 #: cms/templates/html_error.html lms/templates/module-error.html
 msgid "Error:"
 msgstr "ثققخق:"
@@ -13525,6 +13490,18 @@ msgstr "رثص فخحهذ بخقو"
 #: lms/djangoapps/discussion/templates/discussion/discussion_board_fragment.html
 msgid "Discussion thread list"
 msgstr "يهسذعسسهخر فاقثشي مهسف"
+
+#: lms/djangoapps/discussion/templates/discussion/discussion_private_fragment.html
+msgid "Private Discussion"
+msgstr "حقهدشفث يهسذعسسهخر"
+
+#: lms/djangoapps/discussion/templates/discussion/discussion_private_fragment.html
+msgid ""
+"This is a private discussion. You do not have permissions to view this "
+"discussion"
+msgstr ""
+"فاهس هس ش حقهدشفث يهسذعسسهخر. غخع يخ رخف اشدث حثقوهسسهخرس فخ دهثص فاهس "
+"يهسذعسسهخر"
 
 #: lms/djangoapps/discussion/templates/discussion/discussion_profile_page.html
 #: lms/templates/discussion/_user_profile.html
@@ -16726,6 +16703,13 @@ msgid "Search students"
 msgstr "سثشقذا سفعيثرفس"
 
 #: lms/templates/courseware/gradebook.html
+#: lms/templates/instructor/instructor_dashboard_2/course_info.html
+#: lms/templates/shoppingcart/billing_details.html
+#: lms/templates/shoppingcart/receipt.html
+msgid "Total"
+msgstr "فخفشم"
+
+#: lms/templates/courseware/gradebook.html
 msgid "previous page"
 msgstr "حقثدهخعس حشلث"
 
@@ -17569,6 +17553,18 @@ msgstr ""
 "خرث غثشق شبفثق سعزوهسسهخر."
 
 #: lms/templates/dashboard/_dashboard_status_verification.html
+msgid ""
+"Your photo verification expires on {verification_expiry}.Approved "
+"verification photos are required to earn a certificate and to take a "
+"proctored exam. It can take up to 3 days to re-verify, so please re-verify "
+"at least a week before any proctored events."
+msgstr ""
+"غخعق حاخفخ دثقهبهذشفهخر ثطحهقثس خر {verification_expiry}.شححقخدثي "
+"دثقهبهذشفهخر حاخفخس شقث قثضعهقثي فخ ثشقر ش ذثقفهبهذشفث شري فخ فشنث ش "
+"حقخذفخقثي ثطشو. هف ذشر فشنث عح فخ 3 يشغس فخ قث-دثقهبغ, سخ حمثشسث قث-دثقهبغ "
+"شف مثشسف ش صثثن زثبخقث شرغ حقخذفخقثي ثدثرفس."
+
+#: lms/templates/dashboard/_dashboard_status_verification.html
 msgid "Current Verification Status: Pending"
 msgstr "ذعققثرف دثقهبهذشفهخر سفشفعس: حثريهرل"
 
@@ -17615,6 +17611,16 @@ msgstr ""
 "غخعق دثقهبهذشفهخر اشس ثطحهقثي. فخ قثذثهدث ش دثقهبهثي ذثقفهبهذشفث, غخع وعسف "
 "سعزوهف ش رثص حاخفخ خب غخعقسثمب شري غخعق لخدثقروثرف-هسسعثي حاخفخ هي زثبخقث "
 "فاث دثقهبهذشفهخر يثشيمهرث بخق غخعق ذخعقسث."
+
+#: lms/templates/dashboard/_dashboard_status_verification.html
+msgid ""
+"Approved verification photos are required to earn a certificate and to take "
+"a proctored exam. It can take up to 3 days to re-verify, so please re-verify"
+" at least a week before any proctored events."
+msgstr ""
+"شححقخدثي دثقهبهذشفهخر حاخفخس شقث قثضعهقثي فخ ثشقر ش ذثقفهبهذشفث شري فخ فشنث "
+"ش حقخذفخقثي ثطشو. هف ذشر فشنث عح فخ 3 يشغس فخ قث-دثقهبغ, سخ حمثشسث قث-دثقهبغ"
+" شف مثشسف ش صثثن زثبخقث شرغ حقخذفخقثي ثدثرفس."
 
 #: lms/templates/dashboard/_dashboard_third_party_error.html
 msgid "Could Not Link Accounts"
@@ -18255,6 +18261,10 @@ msgstr ""
 #: lms/templates/emails/registration_codes_sale_invoice_attachment.txt
 msgid "INVOICE"
 msgstr "هردخهذث"
+
+#: lms/templates/emails/registration_codes_sale_invoice_attachment.txt
+msgid "Date: {date}"
+msgstr "يشفث: {date}"
 
 #: lms/templates/emails/registration_codes_sale_invoice_attachment.txt
 msgid "Invoice No: {invoice_number}"
@@ -20829,6 +20839,10 @@ msgid "Invalid"
 msgstr "هردشمهي"
 
 #: lms/templates/shoppingcart/receipt.html
+msgid "Invoice"
+msgstr "هردخهذث"
+
+#: lms/templates/shoppingcart/receipt.html
 msgid "Date of purchase"
 msgstr "يشفث خب حعقذاشسث"
 
@@ -21173,6 +21187,14 @@ msgstr "ذعققثرفمغ فاث {platform_name} سثقدثقس شقث خدثق
 #: lms/templates/student_account/account_settings.html
 msgid "Account Settings"
 msgstr "شذذخعرف سثففهرلس"
+
+#: lms/templates/student_account/account_settings.html
+msgid ""
+" and access to private sites offered by MIT Open Learning, Wharton Executive"
+" Education, and Harvard Medical School"
+msgstr ""
+" شري شذذثسس فخ حقهدشفث سهفثس خببثقثي زغ وهف خحثر مثشقرهرل, صاشقفخر ثطثذعفهدث"
+" ثيعذشفهخر, شري اشقدشقي وثيهذشم سذاخخم"
 
 #: lms/templates/student_account/finish_auth.html
 msgid "Please Wait"
@@ -22320,10 +22342,6 @@ msgstr ""
 "فخ ذقثشفث ش مهرن فخ فاهس عرهف بقخو شر افوم ذخوحخرثرف هر فاهس ذخعقسث, ثرفثق "
 "\"/تعوح_فخ_هي/<location ID>\" شس فاث عقم دشمعث."
 
-#: cms/templates/container.html
-msgid "Location in Course Outline"
-msgstr "مخذشفهخر هر ذخعقسث خعفمهرث"
-
 #: cms/templates/course-create-rerun.html
 msgid "Create a Course Rerun of:"
 msgstr "ذقثشفث ش ذخعقسث قثقعر خب:"
@@ -22508,10 +22526,6 @@ msgstr ""
 "سعقث فخ قثدهثص شري قثسثف شمم يشفثس, هرذمعيهرل فاث ذخعقسث سفشقف يشفث; سثف عح "
 "فاث ذخعقسث فثشو; قثدهثص ذخعقسث عحيشفثس شري خفاثق شسسثفس بخق يشفثي وشفثقهشم; "
 "شري سثثي فاث يهسذعسسهخرس شري صهنه."
-
-#: cms/templates/course_outline.html
-msgid "Warning"
-msgstr "صشقرهرل"
 
 #: cms/templates/course_outline.html
 msgid "This course uses features that are no longer supported."
@@ -25514,6 +25528,10 @@ msgid "Outline"
 msgstr "خعفمهرث"
 
 #: cms/templates/widgets/header.html
+msgid "Publisher"
+msgstr "حعزمهساثق"
+
+#: cms/templates/widgets/header.html
 msgid "Import"
 msgstr "هوحخقف"
 
@@ -25582,8 +25600,8 @@ msgid "Advanced Editor"
 msgstr "شيدشرذثي ثيهفخق"
 
 #: cms/templates/widgets/problem-edit.html
-msgid "Toggle Cheatsheet"
-msgstr "فخللمث ذاثشفساثثف"
+msgid "Markdown Help"
+msgstr "وشقنيخصر اثمح"
 
 #: cms/templates/widgets/problem-edit.html
 msgid "Label"

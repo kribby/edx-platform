@@ -44,6 +44,7 @@ from lms.djangoapps.grades.subsection_grade import CreateSubsectionGrade
 from lms.djangoapps.grades.transformer import GradesTransformer
 from lms.djangoapps.instructor_analytics.basic import UNAVAILABLE, list_problem_responses
 from lms.djangoapps.instructor_task.tasks_helper.certs import generate_students_certificates
+# from lms.djangoapps.instructor_task.config.waffle import problem_grade_report_verified_only
 from lms.djangoapps.instructor_task.tasks_helper.enrollments import (
     upload_enrollment_report,
     upload_exec_summary_report,
@@ -74,6 +75,7 @@ from openedx.core.djangoapps.course_groups.tests.helpers import CohortFactory
 from openedx.core.djangoapps.credit.tests.factories import CreditCourseFactory
 from openedx.core.djangoapps.user_api.partition_schemes import RandomUserPartitionScheme
 from openedx.core.djangoapps.util.testing import ContentGroupTestCase, TestConditionalContent
+from openedx.core.lib.teams_config import TeamsConfig
 from shoppingcart.models import (
     Coupon,
     CourseRegistrationCode,
@@ -93,6 +95,12 @@ from xmodule.partitions.partitions import Group, UserPartition
 
 from ..models import ReportStore
 from ..tasks_helper.utils import UPDATE_STATUS_FAILED, UPDATE_STATUS_SUCCEEDED
+
+
+_TEAMS_CONFIG = TeamsConfig({
+    'max_size': 2,
+    'topics': [{'id': 'topic', 'name': 'Topic', 'description': 'A Topic'}],
+})
 
 
 class InstructorGradeReportTestCase(TestReportMixin, InstructorTaskCourseTestCase):
@@ -402,9 +410,7 @@ class TestInstructorGradeReport(InstructorGradeReportTestCase):
             course = CourseFactory.create(
                 cohort_config={'cohorted': True, 'auto_cohort': True, 'auto_cohort_groups': ['cohort 1', 'cohort 2']},
                 user_partitions=[experiment_partition],
-                teams_configuration={
-                    'max_size': 2, 'topics': [{'topic-id': 'topic', 'name': 'Topic', 'description': 'A Topic'}]
-                },
+                teams_configuration=_TEAMS_CONFIG,
             )
         _ = CreditCourseFactory(course_key=course.id)
 
@@ -416,7 +422,7 @@ class TestInstructorGradeReport(InstructorGradeReportTestCase):
 
         RequestCache.clear_all_namespaces()
 
-        expected_query_count = 49
+        expected_query_count = 51
         with patch('lms.djangoapps.instructor_task.tasks_helper.runner._get_current_task'):
             with check_mongo_calls(mongo_count):
                 with self.assertNumQueries(expected_query_count):
@@ -450,9 +456,7 @@ class TestTeamGradeReport(InstructorGradeReportTestCase):
 
     def setUp(self):
         super(TestTeamGradeReport, self).setUp()
-        self.course = CourseFactory.create(teams_configuration={
-            'max_size': 2, 'topics': [{'topic-id': 'topic', 'name': 'Topic', 'description': 'A Topic'}]
-        })
+        self.course = CourseFactory.create(teams_configuration=_TEAMS_CONFIG)
         self.student1 = UserFactory.create()
         CourseEnrollment.enroll(self.student1, self.course.id)
         self.student2 = UserFactory.create()
@@ -768,7 +772,7 @@ class TestInstructorDetailedEnrollmentReport(TestReportMixin, InstructorTaskCour
         response = self.client.get(redeem_url)
         self.assertEquals(response.status_code, 200)
         # check button text
-        self.assertIn('Activate Course Enrollment', response.content.decode('utf-8'))
+        self.assertContains(response, 'Activate Course Enrollment')
 
         response = self.client.post(redeem_url)
         self.assertEquals(response.status_code, 200)
@@ -802,7 +806,7 @@ class TestInstructorDetailedEnrollmentReport(TestReportMixin, InstructorTaskCour
         response = self.client.get(redeem_url)
         self.assertEquals(response.status_code, 200)
         # check button text
-        self.assertIn('Activate Course Enrollment', response.content.decode('utf-8'))
+        self.assertContains(response, 'Activate Course Enrollment')
 
         response = self.client.post(redeem_url)
         self.assertEquals(response.status_code, 200)
@@ -843,7 +847,7 @@ class TestInstructorDetailedEnrollmentReport(TestReportMixin, InstructorTaskCour
         response = self.client.get(redeem_url)
         self.assertEquals(response.status_code, 200)
         # check button text
-        self.assertIn('Activate Course Enrollment', response.content.decode('utf-8'))
+        self.assertContains(response, 'Activate Course Enrollment')
 
         response = self.client.post(redeem_url)
         self.assertEquals(response.status_code, 200)
@@ -939,6 +943,28 @@ class TestProblemGradeReport(TestReportMixin, InstructorTaskModuleTestCase):
                 ]
             )))
         ])
+
+    @patch('lms.djangoapps.instructor_task.tasks_helper.runner._get_current_task')
+    def test_single_problem_verified_student_only(self, _get_current_task):
+        with patch(
+            'lms.djangoapps.instructor_task.tasks_helper.grades.problem_grade_report_verified_only',
+            return_value=True,
+        ):
+            student_verified = self.create_student(u'user_verified', mode='verified')
+            vertical = ItemFactory.create(
+                parent_location=self.problem_section.location,
+                category='vertical',
+                metadata={'graded': True},
+                display_name='Problem Vertical'
+            )
+            self.define_option_problem(u'Problem1', parent=vertical)
+
+            self.submit_student_answer(self.student_1.username, u'Problem1', ['Option 1'])
+            self.submit_student_answer(student_verified.username, u'Problem1', ['Option 1'])
+            result = ProblemGradeReport.generate(None, None, self.course.id, None, 'graded')
+            self.assertDictContainsSubset(
+                {'action_name': 'graded', 'attempted': 1, 'succeeded': 1, 'failed': 0}, result
+            )
 
     @patch('lms.djangoapps.instructor_task.tasks_helper.runner._get_current_task')
     @patch('lms.djangoapps.grades.course_grade_factory.CourseGradeFactory.iter')
@@ -1328,7 +1354,7 @@ class TestExecutiveSummaryReport(TestReportMixin, InstructorTaskCourseTestCase):
         response = self.client.get(redeem_url)
         self.assertEquals(response.status_code, 200)
         # check button text
-        self.assertIn('Activate Course Enrollment', response.content.decode('utf-8'))
+        self.assertContains(response, 'Activate Course Enrollment')
 
         response = self.client.post(redeem_url)
         self.assertEquals(response.status_code, 200)
@@ -1524,9 +1550,7 @@ class TestTeamStudentReport(TestReportMixin, InstructorTaskCourseTestCase):
 
     def setUp(self):
         super(TestTeamStudentReport, self).setUp()
-        self.course = CourseFactory.create(teams_configuration={
-            'max_size': 2, 'topics': [{'topic-id': 'topic', 'name': 'Topic', 'description': 'A Topic'}]
-        })
+        self.course = CourseFactory.create(teams_configuration=_TEAMS_CONFIG)
         self.student1 = UserFactory.create()
         CourseEnrollment.enroll(self.student1, self.course.id)
         self.student2 = UserFactory.create()
@@ -2012,6 +2036,33 @@ class TestGradeReport(TestReportMixin, InstructorTaskModuleTestCase):
                     },
                 ],
                 ignore_other_columns=True,
+            )
+
+    @patch('lms.djangoapps.instructor_task.tasks_helper.runner._get_current_task')
+    def test_course_grade_with_verified_student_only(self, _get_current_task):
+        """
+        Tests that course grade report has expected data when it is generated only for
+        verified learners.
+        """
+        with patch(
+            'lms.djangoapps.instructor_task.tasks_helper.grades.course_grade_report_verified_only',
+            return_value=True,
+        ):
+            student_1 = self.create_student(u'user_honor')
+            student_verified = self.create_student(u'user_verified', mode='verified')
+            vertical = ItemFactory.create(
+                parent_location=self.problem_section.location,
+                category='vertical',
+                metadata={'graded': True},
+                display_name='Problem Vertical'
+            )
+            self.define_option_problem(u'Problem1', parent=vertical)
+
+            self.submit_student_answer(student_1.username, u'Problem1', ['Option 1'])
+            self.submit_student_answer(student_verified.username, u'Problem1', ['Option 1'])
+            result = CourseGradeReport.generate(None, None, self.course.id, None, 'graded')
+            self.assertDictContainsSubset(
+                {'action_name': 'graded', 'attempted': 1, 'succeeded': 1, 'failed': 0}, result
             )
 
     @ddt.data(True, False)

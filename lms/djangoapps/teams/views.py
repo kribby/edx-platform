@@ -1,6 +1,7 @@
-"""HTTP endpoints for the Teams API."""
-
-from __future__ import absolute_import
+"""
+HTTP endpoints for the Teams API.
+"""
+from __future__ import absolute_import, unicode_literals
 
 import logging
 
@@ -27,6 +28,13 @@ from rest_framework_oauth.authentication import OAuth2Authentication
 
 from lms.djangoapps.courseware.courses import get_course_with_access, has_access
 from lms.djangoapps.discussion.django_comment_client.utils import has_discussion_privileges
+from lms.djangoapps.teams.api import (
+    OrganizationProtectionStatus,
+    has_team_api_access,
+    user_organization_protection_status,
+    has_specific_team_access,
+    add_team_count,
+)
 from lms.djangoapps.teams.models import CourseTeam, CourseTeamMembership
 from openedx.core.lib.api.parsers import MergePatchParser
 from openedx.core.lib.api.permissions import IsStaffOrReadOnly
@@ -37,7 +45,6 @@ from openedx.core.lib.api.view_utils import (
     build_api_error
 )
 from student.models import CourseAccessRole, CourseEnrollment
-from student.roles import CourseStaffRole
 from util.model_utils import truncate_fields
 from xmodule.modulestore.django import modulestore
 
@@ -49,8 +56,7 @@ from .serializers import (
     CourseTeamCreationSerializer,
     CourseTeamSerializer,
     MembershipSerializer,
-    TopicSerializer,
-    add_team_count
+    TopicSerializer
 )
 from .utils import emit_team_event
 
@@ -121,6 +127,7 @@ class TeamsDashboardView(GenericAPIView):
         # to the serializer so that the paginated results indicate how they were sorted.
         sort_order = 'name'
         topics = get_alphabetical_topics(course)
+        organization_protection_status = user_organization_protection_status(request.user, course_key)
 
         # Paginate and serialize topic data
         # BulkTeamCountPaginatedTopicSerializer will add team counts to the topics in a single
@@ -130,13 +137,22 @@ class TeamsDashboardView(GenericAPIView):
             topics,
             request,
             BulkTeamCountTopicSerializer,
-            {'course_id': course.id},
+            {
+                'course_id': course.id,
+                'organization_protection_status': organization_protection_status
+            },
         )
         topics_data["sort_order"] = sort_order
 
-        user = request.user
+        filter_query = {
+            'membership__user': user,
+            'course_id': course.id,
+        }
+        if organization_protection_status != OrganizationProtectionStatus.protection_exempt:
+            is_user_org_protected = organization_protection_status == OrganizationProtectionStatus.protected
+            filter_query['organization_protected'] = is_user_org_protected
 
-        user_teams = CourseTeam.objects.filter(membership__user=user, course_id=course.id)
+        user_teams = CourseTeam.objects.filter(**filter_query)
         user_teams_data = self._serialize_and_paginate(
             MyTeamsPagination,
             user_teams,
@@ -166,7 +182,7 @@ class TeamsDashboardView(GenericAPIView):
             "team_memberships_url": reverse('team_membership_list', request=request),
             "my_teams_url": reverse('teams_list', request=request),
             "team_membership_detail_url": reverse('team_membership_detail', args=['team_id', user.username]),
-            "languages": [[lang[0], _(lang[1])] for lang in settings.ALL_LANGUAGES],
+            "languages": [[lang[0], _(lang[1])] for lang in settings.ALL_LANGUAGES],  # pylint: disable=translation-of-non-string
             "countries": list(countries),
             "disable_courseware_js": True,
             "teams_base_url": reverse('teams_dashboard', request=request, kwargs={'course_id': course_id}),
@@ -205,30 +221,6 @@ class TeamsDashboardView(GenericAPIView):
         # be a dictionary with keys "count", "next", "previous", and "results"
         # (where "results" is set to the value of the original list)
         return paginator.get_paginated_response(serializer.data).data
-
-
-def has_team_api_access(user, course_key, access_username=None):
-    """Returns True if the user has access to the Team API for the course
-    given by `course_key`. The user must either be enrolled in the course,
-    be course staff, be global staff, or have discussion privileges.
-
-    Args:
-      user (User): The user to check access for.
-      course_key (CourseKey): The key to the course which we are checking access to.
-      access_username (string): If provided, access_username must match user.username for non staff access.
-
-    Returns:
-      bool: True if the user has access, False otherwise.
-    """
-    if user.is_staff:
-        return True
-    if CourseStaffRole(course_key).has_user(user):
-        return True
-    if has_discussion_privileges(user, course_key):
-        return True
-    if not access_username or access_username == user.username:
-        return CourseEnrollment.is_enrolled(user, course_key)
-    return False
 
 
 class TeamsListView(ExpandableFieldViewMixin, GenericAPIView):
@@ -319,6 +311,9 @@ class TeamsListView(ExpandableFieldViewMixin, GenericAPIView):
                 * membership: A list of the users that are members of the team.
                   See membership endpoint for more detail.
 
+                * organization_protected: Whether the team consists of organization-protected
+                  learners
+
             For all text fields, clients rendering the values should take care
             to HTML escape them to avoid script injections, as the data is
             stored exactly as specified. The intention is that plain text is
@@ -338,6 +333,10 @@ class TeamsListView(ExpandableFieldViewMixin, GenericAPIView):
 
             If the server is unable to connect to Elasticsearch, and
             the text_search parameter is supplied, a 503 error is returned.
+
+            If the requesting user is a learner, the learner would only see organization
+            protected set of teams if the learner is enrolled in a degree bearing institution.
+            Otherwise, the learner will only see organization unprotected set of teams.
 
         **Response Values for POST**
 
@@ -403,13 +402,22 @@ class TeamsListView(ExpandableFieldViewMixin, GenericAPIView):
             result_filter.update({'membership__user__username': username})
         topic_id = request.query_params.get('topic_id', None)
         if topic_id is not None:
-            if topic_id not in [topic['id'] for topic in course_module.teams_configuration['topics']]:
+            if topic_id not in course_module.teamsets_by_id:
                 error = build_api_error(
                     ugettext_noop(u'The supplied topic id {topic_id} is not valid'),
                     topic_id=topic_id
                 )
                 return Response(error, status=status.HTTP_400_BAD_REQUEST)
             result_filter.update({'topic_id': topic_id})
+
+        organization_protection_status = user_organization_protection_status(request.user, course_key)
+        if organization_protection_status != OrganizationProtectionStatus.protection_exempt:
+            result_filter.update(
+                {
+                    'organization_protected': organization_protection_status == OrganizationProtectionStatus.protected
+                }
+            )
+
         if text_search and CourseTeamIndexer.search_is_enabled():
             try:
                 search_engine = CourseTeamIndexer.engine()
@@ -506,6 +514,10 @@ class TeamsListView(ExpandableFieldViewMixin, GenericAPIView):
 
         data = request.data.copy()
         data['course_id'] = six.text_type(course_key)
+
+        organization_protection_status = user_organization_protection_status(request.user, course_key)
+        if organization_protection_status != OrganizationProtectionStatus.protection_exempt:
+            data['organization_protected'] = organization_protection_status == OrganizationProtectionStatus.protected
 
         serializer = CourseTeamCreationSerializer(data=data)
         add_serializer_errors(serializer, data, field_errors)
@@ -617,6 +629,9 @@ class TeamsDetailView(ExpandableFieldViewMixin, RetrievePatchAPIView):
 
                 * last_activity_at: The date of the last activity of any team member
                   within the team.
+
+                * organization_protected: Whether the team consists of organization-protected
+                  learners
 
             For all text fields, clients rendering the values should take care
             to HTML escape them to avoid script injections, as the data is
@@ -748,6 +763,11 @@ class TopicListView(GenericAPIView):
 
                 * description: A description of the topic.
 
+                * team_count: Number of teams created under the topic. If the requesting user
+                  is enrolled into a degree bearing institution, the count only include the teams
+                  with organization_protected attribute true. If the requesting user is not
+                  affiliated with any institutions, the teams included in the count would only be
+                  those teams whose members are outside of institutions affliation.
     """
 
     authentication_classes = (OAuth2Authentication, SessionAuthentication)
@@ -793,9 +813,10 @@ class TopicListView(GenericAPIView):
 
         # Always sort alphabetically, as it will be used as secondary sort
         # in the case of "team_count".
+        organization_protection_status = user_organization_protection_status(request.user, course_id)
         topics = get_alphabetical_topics(course_module)
         if ordering == 'team_count':
-            add_team_count(topics, course_id)
+            add_team_count(topics, course_id, organization_protection_status)
             topics.sort(key=lambda t: t['team_count'], reverse=True)
             page = self.paginate_queryset(topics)
             serializer = TopicSerializer(
@@ -806,7 +827,14 @@ class TopicListView(GenericAPIView):
         else:
             page = self.paginate_queryset(topics)
             # Use the serializer that adds team_count in a bulk operation per page.
-            serializer = BulkTeamCountTopicSerializer(page, context={'course_id': course_id}, many=True)
+            serializer = BulkTeamCountTopicSerializer(
+                page,
+                context={
+                    'course_id': course_id,
+                    'organization_protection_status': organization_protection_status
+                },
+                many=True
+            )
 
         response = self.get_paginated_response(serializer.data)
         response.data['sort_order'] = ordering
@@ -823,7 +851,10 @@ def get_alphabetical_topics(course_module):
     Returns:
         list: a list of sorted team topics
     """
-    return sorted(course_module.teams_topics, key=lambda t: t['name'].lower())
+    return sorted(
+        course_module.teams_configuration.cleaned_data_old_format['topics'],
+        key=lambda t: t['name'].lower(),
+    )
 
 
 class TopicDetailView(APIView):
@@ -863,6 +894,11 @@ class TopicDetailView(APIView):
 
             * description: A description of the topic.
 
+            * team_count: Number of teams created under the topic. If the requesting user
+                  is enrolled into a degree bearing institution, the count only include the teams
+                  with organization_protected attribute true. If the requesting user is not
+                  affiliated with any institutions, the teams included in the count would only be
+                  those teams whose members are outside of institutions affliation.
     """
 
     authentication_classes = (OAuth2Authentication, SessionAuthentication)
@@ -883,12 +919,19 @@ class TopicDetailView(APIView):
         if not has_team_api_access(request.user, course_id):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        topics = [t for t in course_module.teams_topics if t['id'] == topic_id]
-
-        if len(topics) == 0:
+        try:
+            topic = course_module.teamsets_by_id[topic_id]
+        except KeyError:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = TopicSerializer(topics[0], context={'course_id': course_id})
+        organization_protection_status = user_organization_protection_status(request.user, course_id)
+        serializer = TopicSerializer(
+            topic.cleaned_data_old_format,
+            context={
+                'course_id': course_id,
+                'organization_protection_status': organization_protection_status
+            }
+        )
         return Response(serializer.data)
 
 
@@ -1049,6 +1092,8 @@ class MembershipListView(ExpandableFieldViewMixin, GenericAPIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             if not has_team_api_access(request.user, team.course_id):
                 return Response(status=status.HTTP_404_NOT_FOUND)
+            if not has_specific_team_access(request.user, team):
+                return Response(status=status.HTTP_403_FORBIDDEN)
 
         if 'username' in request.query_params:
             specified_username_or_team = True
@@ -1105,13 +1150,18 @@ class MembershipListView(ExpandableFieldViewMixin, GenericAPIView):
         if not has_team_api_access(request.user, team.course_id, access_username=username):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+        if not has_specific_team_access(request.user, team):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         course_module = modulestore().get_course(team.course_id)
-        if course_module.teams_max_size is not None and team.users.count() >= course_module.teams_max_size:
+        # This should use `calc_max_team_size` instead of `default_max_team_size` (TODO MST-32).
+        max_team_size = course_module.teams_configuration.default_max_team_size
+        if max_team_size is not None and team.users.count() >= max_team_size:
             return Response(
                 build_api_error(ugettext_noop("This team is already full.")),
                 status=status.HTTP_400_BAD_REQUEST
@@ -1243,6 +1293,9 @@ class MembershipDetailView(ExpandableFieldViewMixin, GenericAPIView):
         if not has_team_api_access(request.user, team.course_id):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+        if not has_specific_team_access(request.user, team):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         membership = self.get_membership(username, team)
 
         serializer = self.get_serializer(instance=membership)
@@ -1251,21 +1304,24 @@ class MembershipDetailView(ExpandableFieldViewMixin, GenericAPIView):
     def delete(self, request, team_id, username):
         """DELETE /api/team/v0/team_membership/{team_id},{username}"""
         team = self.get_team(team_id)
-        if has_team_api_access(request.user, team.course_id, access_username=username):
-            membership = self.get_membership(username, team)
-            removal_method = 'self_removal'
-            if 'admin' in request.query_params:
-                removal_method = 'removed_by_admin'
-            membership.delete()
-            emit_team_event(
-                'edx.team.learner_removed',
-                team.course_id,
-                {
-                    'team_id': team.team_id,
-                    'user_id': membership.user.id,
-                    'remove_method': removal_method
-                }
-            )
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
+        if not has_team_api_access(request.user, team.course_id, access_username=username):
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if not has_specific_team_access(request.user, team):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        membership = self.get_membership(username, team)
+        removal_method = 'self_removal'
+        if 'admin' in request.query_params:
+            removal_method = 'removed_by_admin'
+        membership.delete()
+        emit_team_event(
+            'edx.team.learner_removed',
+            team.course_id,
+            {
+                'team_id': team.team_id,
+                'user_id': membership.user.id,
+                'remove_method': removal_method
+            }
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)

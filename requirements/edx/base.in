@@ -85,6 +85,7 @@ edx-proctoring>=2.0.1
 edx-proctoring-proctortrack==1.0.5  # Intentionally and permanently pinned to ensure code changes are reviewed
 edx-rest-api-client
 edx-search
+edx-sga
 edx-submissions
 edx-user-state-client
 edx-when
@@ -107,7 +108,7 @@ Markdown                            # Convert text markup to HTML; used in capa 
 mongoengine==0.10.0                 # Object-document mapper for MongoDB, used in the LMS dashboard
 mysqlclient                         # Driver for the default production relational database
 newrelic                            # New Relic agent for performance monitoring
-nodeenv==1.1.1                      # Utility for managing Node.js environments; we use this for deployments and testing
+nodeenv==1.3.3                      # Utility for managing Node.js environments; we use this for deployments and testing
 oauthlib                            # OAuth specification support for authenticating via LTI or other Open edX services
 pdfminer.six                        # Used in shoppingcart for extracting/parsing pdf text
 piexif==1.0.2                       # Exif image metadata manipulation, used in the profile_images app
@@ -138,7 +139,9 @@ pytz                                # Time zone information database
 PyYAML                              # Used to parse XModule resource templates
 redis==2.10.6                       # celery task broker
 requests-oauthlib                   # Simplifies use of OAuth via the requests library, used for CCX and LTI
+random2
 rules                               # Django extension for rules-based authorization checks
+simplejson
 sailthru-client==2.2.3              # For Sailthru integration
 Shapely                             # Geometry library, used for image click regions in capa
 six                                 # Utilities for supporting Python 2 & 3 in the same codebase

@@ -7,7 +7,7 @@
 argh==0.26.2              # via watchdog
 certifi==2019.9.11        # via requests
 chardet==3.0.4            # via requests
-edx-opaque-keys==2.0.0
+edx-opaque-keys==2.0.1
 funcsigs==1.0.2           # via mock
 idna==2.8                 # via requests
 lazy==1.1
@@ -23,11 +23,11 @@ pymongo==2.9.1
 python-memcached==1.59
 pyyaml==5.1.2             # via watchdog
 requests==2.22.0
-six==1.12.0               # via edx-opaque-keys, libsass, mock, paver, python-memcached, stevedore
+six==1.13.0               # via edx-opaque-keys, libsass, mock, paver, python-memcached, stevedore
 stevedore==1.31.0
-urllib3==1.25.6           # via requests
+urllib3==1.25.7           # via requests
 watchdog==0.9.0
 wrapt==1.10.5
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.2.0        # via lazy
+# setuptools==41.6.0        # via lazy
