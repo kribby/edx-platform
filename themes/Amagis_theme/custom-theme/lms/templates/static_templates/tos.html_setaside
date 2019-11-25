@@ -1,0 +1,199 @@
+<%page expression_filter="h"/>
+<%! from django.utils.translation import ugettext as _ %>
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">${_("Teacher course submission portal")}</%block>
+
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous"
+        />
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.512.0.min.js"></script>
+
+
+
+
+        <script>
+            const s3 = new AWS.S3({
+                accessKeyId: 'AKIAQ4WOHZIIR6C72OU7',
+                secretAccessKey: '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',
+                region: 'eu-west-2'
+            });
+
+            function uploadFile(filename, body) {
+                var params = {
+                    Bucket: 'vietnam12345',
+                    Key: filename,
+                    Body: body
+                };
+                s3.putObject(params, function(err, data) {
+                    if (err) console.log(err, err.stack);
+                    else console.log(data);
+                });
+            }
+
+            const form = document.getElementById('form');
+            form.addEventListener('submit', event => {
+                event.preventDefault();
+                let data = '';
+
+                const lastName = document.getElementById('lastName').value;
+
+                const inputs = document.querySelectorAll('input, select, textarea');
+                for (let i = 0; i < inputs.length; i++) {
+                    if (inputs[i].type === 'file') {
+                        const file = inputs[i].files[0];
+                        // if(file) console.log(`/${lastName}/${file.name}`, file);
+                        if (file) uploadFile(`${lastName}/${file.name}`, file);
+                    } else {
+                        data += `${inputs[i].placeholder || inputs[i][0].value}: ${inputs[i].value}\n\n`;
+                    }
+                }
+                uploadFile(`${lastName}/data.txt`, new Blob([data]));
+                form.reset();
+            });
+        </script>
+    </head>
+
+
+
+
+
+
+
+<main id="main" aria-label="Content" tabindex="-1">
+
+
+        <form class="container" id="form">
+            <div class="form-row">
+                <div class="col">
+                    <input type="email" class="form-control" placeholder="Email" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="First name" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" id="lastName" placeholder="Last name" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Public Username" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="password" class="form-control" placeholder="Password" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <select class="form-control">
+                        <option disabled selected>Registering as associate or teacher?</option>
+                        <option value="Associate">Associate</option>
+                        <option value="Teacher">Teacher</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Career highlight 1" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <textarea
+                        class="form-control"
+                        placeholder="Tell us about your career highlights in 5 sentences"
+                        rows="3"
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Linkedin profile link" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" accept="image/*" id="pic"/>
+                        <label class="custom-file-label" for="pic"
+                            >Choose or drag and drop your profile picture here</label
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <textarea
+                        class="form-control"
+                        placeholder="Address"
+                        rows="3"
+                    ></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Course name" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Current employer/organisation" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Course run" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <select class="form-control" placeholder="tst">
+                        <option disabled selected>Course number</option>
+                        <option value="module_1">module_1</option>
+                        <option value="module_2">module_2</option>
+                        <option value="module_3">module_3</option>
+                        <option value="module_4">module_4</option>
+                        <option value="module_5">module_5</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" accept="video/*" id="trailer"/>
+                        <label class="custom-file-label" for="trailer">Choose or drag and drop course trailer</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" accept="video/*" id="course"/>
+                        <label class="custom-file-label" for="course">Choose or drag and drop 90 minutes course</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="slides"/>
+                        <label class="custom-file-label" for="slides">Choose or drag and drop course slides</label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+</main>

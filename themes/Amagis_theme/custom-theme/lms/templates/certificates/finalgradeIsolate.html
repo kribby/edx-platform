@@ -1,0 +1,18 @@
+TEST
+<!--
+
+<%page expression_filter="h" args="cert_status, course_overview, enrollment, reverify_link" />
+
+<%!
+from django.utils.translation import ugettext as _
+from openedx.core.djangolib.markup import HTML, Text
+from course_modes.models import CourseMode
+%>
+<%namespace name='static' file='../static_content.html'/>
+
+
+<p class="message-copy">${_("Your final grade:")}
+  <span class="grade-value">${"{0:.0f}%".format(float(cert_status['grade'])*100)}</span>.
+</p>
+
+-->

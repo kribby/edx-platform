@@ -1,0 +1,41 @@
+
+
+<%page expression_filter="h"/>
+<%inherit file="base.html" />
+<%def name="online_help_token()"><% return "Welcome" %></%def>
+<%namespace name='static' file='static_content.html'/>
+<%!
+  from django.urls import reverse
+  from django.utils.translation import ugettext as _
+  from openedx.core.djangolib.markup import HTML, Text
+%>
+<%block name="title">${_("")}</%block>
+<%block name="bodyclass">not-signedin index view-howitworks</%block>
+
+<%block name="content">
+
+
+<div class="header-row" id="header-row" style="padding: 0px; overflow:hidden; height:300px; background-color: black;">
+   <br><br><br>
+   <div class="container-fluid" style="padding: 0px; text-align: center;font-size: 100px;color: blue;">
+        Amagis instructor portal
+   </div>
+   <br><br><br>
+   <br><br><br>
+</div>
+
+
+
+<div class="wrapper-content-cta wrapper">
+  <section class="content content-cta">
+    <header>
+      <h2 class="sr">${_("Sign Up for {studio_name} Today!").format(studio_name=settings.STUDIO_SHORT_NAME)}</h2>
+    </header>
+
+    <ul class="list-actions">
+      <li class="action-item">
+        <a href="${reverse('login')}" class="action action-primary">Instructor login</a>
+      </li>
+    </ul>
+  </section>
+</%block>

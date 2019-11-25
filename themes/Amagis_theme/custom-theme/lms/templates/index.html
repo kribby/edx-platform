@@ -1,0 +1,99 @@
+	
+
+<%page expression_filter="h"/>
+<%inherit file="main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%namespace file='main.html' import="login_query"/>
+
+<%!
+from django.utils.translation import ugettext as _
+from django.urls import reverse
+
+from openedx.core.djangolib.markup import HTML, Text
+%>
+<head>
+  % if not uses_bootstrap:
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+ % endif
+</head>
+
+
+
+
+
+
+
+<main>
+   <center>
+    <h1>AmagisUNI</h1>
+    <h1 style="height: 470px;background-image:url('../static/images/banner.jpg');background-repeat:no-repeat;width: 100%;margin-left:160px;margin-right:0px "></h1>
+    <h1>From professional to professional</h1>
+   <p>
+      <h1 style="align-items:center">
+         <button type="button" class="btn btn-secondary" href="#" onclick="window.location = window.location.protocol + '//' + window.location.hostname + '/courses';">Course list</button>
+      </h1>
+      <h1 style="align-items:center">
+      % if user.is_authenticated:
+         <%include file="header/navbar-authenticated.html" args="online_help_token=online_help_token"/>
+      % else:
+         <button type="button" class="btn btn-secondary" onclick="location.href='/register${login_query()}'">One time register</button>  
+         <button type="button" class="btn btn-secondary" onclick="location.href='/login${login_query()}'">Student sign in</button>
+      % endif
+      </h1>
+   <!--
+      <h1 style="align-items:center">
+         <button type="button" class="btn btn-secondary" href="#" onclick="window.location = window.location.protocol + '//' + window.location.hostname + ':18010/signin';">Teacher Sign in</button>
+      </h1>
+   -->
+   <!--
+      <h1 style="align-items:center">
+         <button type="button" class="btn btn-secondary" href="#" onclick="window.location = window.location.protocol + '//' + window.location.hostname + '/tos';">Teacher course proposal portal</button>
+      </h1>
+   -->
+      <h1 style="align-items:center">
+         <button type="button" class="btn btn-secondary" href="#" onclick="window.location = window.location.protocol + '//3.9.172.116/lecturerapplication.html'">Apply to be an AmagisUNI lecturer here</button>
+      </h1>
+   </p>
+
+
+
+   <video width="512" height="380" controls controlsList="nodownload" controls="" name="media">
+   <source src="https://vietnam12345.s3.eu-west-2.amazonaws.com/y2mate.com+-+two_must_see_charts_about_the_sp_500_and_the_british_pound_vgPrh2PgVoE_240p.mp4" type="video/mp4" autostart="false">
+         <script>
+         var video = document.currentScript.parentElement;
+         video.volume = 0.1;
+         </script>
+   </video>
+   </center>
+</main>
+
+% if show_homepage_promo_video:
+  <section id="video-modal" class="modal home-page-video-modal video-modal">
+    <div class="inner-wrapper">
+      <iframe title="YouTube Video" width="640" height="360" src="//www.youtube.com/embed/${homepage_promo_video_youtube_id}?showinfo=0" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </section>
+% endif
+
+<%block name="js_extra">
+   <script type="text/javascript">
+      $(window).load(function() {
+         if(getParameterByName('next')) {
+              $('#login').trigger("click");
+         }
+      })
+   </script>
+</%block>
+
+% if show_signup_immediately is not UNDEFINED:
+  ## NOTE: This won't work in production, because anonymous views are cached, so it will
+  ## show either with or without this extra js for 3 minutes at a time.
+<script type="text/javascript">
+  $(window).load(function() {$('#signup_action').trigger("click");});
+</script>
+% endif
+% if not uses_bootstrap:
+  <!-- McDaniel Oct-2018: add the Bootstrap javascript library, unless it's already included from webpack -->
+  ## xss-lint: disable=mako-invalid-js-filter
+  <script type="text/javascript" src="${static.url('common/js/vendor/bootstrap.bundle.js')}"></script>
+% endif
