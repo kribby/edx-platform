@@ -26,7 +26,8 @@ from lms.djangoapps.certificates.api import (
     get_certificate_footer_context,
     get_certificate_header_context,
     get_certificate_template,
-    get_certificate_url
+    get_certificate_url,
+    get_certificates_for_user
 )
 from lms.djangoapps.certificates.models import (
     CertificateGenerationCourseSetting,
@@ -279,6 +280,44 @@ def _update_social_context(request, context, course, user, user_certificate, pla
     share_url = request.build_absolute_uri(get_certificate_url(course_id=course.id, uuid=user_certificate.verify_uuid))
     context['share_url'] = share_url
     twitter_url = ''
+#
+#
+#KB HERE
+#
+
+#Not sure if below statement is true:
+#You need to convert the course.id variable to string and then unicode (like below) to be able to use it in the for loop lookup
+#    unicode(str(course.id),"utf-8")   #course.id has a type <class'opaque_keys.edx.locator.courselocator'>
+
+
+
+    course_target=unicode(str(course.id),"utf-8") #str('course-v1:Amagis+em101+4Q19')
+    targetuser=user.username #user.username is a unicode variable
+
+##Replace targetuser (line below ) with u'kris@hotmail.com'
+    user_info=get_certificates_for_user(targetuser)
+
+#The problem is  somewhere between lines 301 and 305 iThink it is the for loop
+    for i in range(len(user_info)):
+       if (str(user_info[i]['course_key'])==course_target):
+               target_row=i
+
+#commented today    context['studentgradeearned']=int(float(user_info[target_row]['grade'])*100)
+
+
+#    if (user_info[target_row]['grade']==u''): 
+#       grade=unicode('it is zero',"utf-8")
+#    else:
+#       grade==user_info[target_row]['grade']
+
+
+    context['studentgradeearned']=user_info[target_row]['grade']  #grade
+
+
+
+#
+#
+#
     if context.get('twitter_share_enabled', False):
         twitter_url = 'https://twitter.com/intent/tweet?text={twitter_share_text}&url={share_url}'.format(
             twitter_share_text=smart_str(context['twitter_share_text']),
@@ -306,6 +345,36 @@ def _update_context_with_user_info(context, user, user_certificate):
     """
     user_fullname = user.profile.name
     context['username'] = user.username
+
+
+    ####KB ammendment####
+#    user_coursegrade=float(GeneratedCertificate.objects.get(verify_uuid=uuid).grade)
+    ####KB ammendment####
+    #context['studentgradeearned']=(get_certificates_for_user(u'kris@hotmail.com')[0]['grade'].encode("utf-8")*100) #user.username  #100 #user_certificate #user_coursegrade
+##Leave stuff up here commented out
+
+
+#    course_target=CourseLocator(u'Amagis', u'em101', u'4Q19', None, None) #unicode("course-v1:Amagis+em101+4Q19","utf-8")
+#    targetuser=user.username
+#    unicodeuser=unicode(targetuser, "utf-8")
+##Replace targetuser (line below ) with u'kris@hotmail.com'
+#    user_info=get_certificates_for_user(unicodeuser)
+
+
+#    for i in user_info:
+#    	if (str(i['course_key'])==course_target):
+#        	target_row=i
+
+#    #context['studentgradeearned']=int(float(target_row['grade'])*100)
+
+#    context['studentgradeearned']=user.username
+
+
+######    context['studentgradeearned']=int(float(get_certificates_for_user(u'kris@hotmail.com')[0]['grade'])*100)
+
+
+
+
     context['course_mode'] = user_certificate.mode
     context['accomplishment_user_id'] = user.id
     context['accomplishment_copy_name'] = user_fullname

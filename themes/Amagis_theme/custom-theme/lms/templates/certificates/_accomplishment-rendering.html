@@ -32,11 +32,11 @@ course_mode_class = course_mode if course_mode else ''
                         <span class="accomplishment-course hd-1 emphasized">
                             <span class="accomplishment-course-name">${accomplishment_copy_course_name}</span>
                         </span>
+                        <!---The preview mode in studio will not work because the admin hasn't taken the course and exam-->
+                        <span class="accomplishment-summary copy copy-lead">and achieved a mark of ${"{0:.0f}% in the exam".format(float(studentgradeearned)*100)}</span>
                     </p>
-
                     <!--<p class="accomplishment-statement-detail copy copy-lead">${accomplishment_copy_course_description}</p>-->
                 </div>
-
                 <div class="accomplishment-signatories">
                     <h3 class="accomplishment-signatories-title sr-only">${_("Noted by")}</h3>
 
